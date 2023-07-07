@@ -1,0 +1,27 @@
+{% sw_extends '@Storefront/storefront/component/checkout/offcanvas-cart.html.twig' %}
+
+{% block component_offcanvas_cart_actions %}
+    <div class="offcanvas-cart-actions">
+        {% block component_offcanvas_cart_actions_promotion %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block component_offcanvas_cart_actions_checkout %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block component_offcanvas_cart_actions_cart %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block component_offcanvas_cart_actions_inquiry %}
+            <div class="d-grid">
+                <a href="{{ path('frontend.inquiry.register.page') }}"
+                   class="btn btn-link"
+                   title="{{ "inquiry.proceedToCart"|trans|striptags }}">
+                    {{ "inquiry.proceedToCart"|trans|sw_sanitize }}
+                </a>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
