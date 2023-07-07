@@ -24,5 +24,19 @@
                 <argument type="service" id="twig"/>
             </call>
         </service>
+
+        <service id="Pix\Inquiry\Service\InquiryPayment">
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <tag name="shopware.payment.method.sync" />
+        </service>
+
+        <service id="Pix\Inquiry\Subscriber\InquirySaveSubscriber">
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Pix\Inquiry\Service\FileUploader">
+            <argument type="string">'%kernel.project_dir%/public/pixinquiry'</argument>
+        </service>
     </services>
 </container>

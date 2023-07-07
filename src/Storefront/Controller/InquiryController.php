@@ -47,7 +47,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class InquiryController extends StorefrontController
 {

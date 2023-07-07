@@ -1,0 +1,85 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_main_content %}
+    {% block page_checkout_confirm %}
+        {% block page_checkout_confirm_header %}
+            <h1 class="confirm-main-header">
+                {{ "checkout.confirmHeader"|trans|sw_sanitize }}
+            </h1>
+        {% endblock %}
+
+        {% block page_checkout_confirm_alerts %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_confirm_tos %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_inquiry_upload_file %}
+            <div class="confirm-inquiry-upload-file">
+                <div class="card checkout-card">
+                    <div class="card-body">
+                        {% block page_checkout_inquiry_upload_file_header %}
+                            <div class="card-title">
+                                {{ "checkout.confirmTermsHeader"|trans|sw_sanitize }}
+                            </div>
+                        {% endblock %}
+
+                        {% block page_checkout_inquiry_upload_file_control %}
+                            <div class="form-input">
+                                <input type="file"
+                                       id="inquiryUploadFile"
+                                       form="confirmOrderForm"
+                                       name="inquiryUploadFile"
+                                />
+                            </div>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block page_checkout_confirm_address %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_confirm_payment_shipping %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_confirm_product_table %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_confirm_hidden_line_items_information %}
+            {{ parent() }}
+        {% endblock %}
+    {% endblock %}
+{% endblock %}
+
+{% block page_checkout_aside_actions %}
+    <div class="checkout-aside-action">
+        <form id="confirmOrderForm"
+              action="{{ path('frontend.inquiry.save') }}"
+              data-form-preserver="true"
+              data-form-submit-loader="true"
+              data-form-add-history="true"
+              data-form-add-history-options='{{ formAddHistoryOptions|json_encode }}'
+              method="post">
+            {% block page_checkout_confirm_form_submit %}
+                <div class="d-grid">
+                    <button id="confirmFormSubmit"
+                            class="btn btn-primary btn-lg"
+                            form="confirmOrderForm"
+                            {% if page.cart.errors.blockResubmit %}
+                                disabled
+                            {% endif %}
+                            type="submit">
+                        {{ "checkout.confirmSubmit"|trans|sw_sanitize }}
+                    </button>
+                </div>
+            {% endblock %}
+        </form>
+    </div>
+{% endblock %}
