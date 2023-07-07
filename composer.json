@@ -1,0 +1,23 @@
+{
+  "name": "pix/inquiry",
+  "description": "Submit request as order",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pixline Media"
+    }
+  ],
+  "extra": {
+    "shopware-plugin-class": "Pix\\Inquiry\\PixInquiry",
+    "label": {
+      "de-DE": "Anfrage als Bestellung Absenden",
+      "en-GB": "Submit request as order"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Pix\\Inquiry\\": "src/"
+    }
+  }
+}
