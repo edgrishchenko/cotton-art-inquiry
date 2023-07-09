@@ -59,7 +59,7 @@ class PixInquiry extends Plugin
                 'config' => [
                     'label' => [
                         'en-GB' => 'Pix Inquiry',
-                        'de-DE' => 'Pix Inquiry',
+                        'de-DE' => 'Pix Anfrage',
                     ],
                 ],
                 'customFields' => [
@@ -69,7 +69,7 @@ class PixInquiry extends Plugin
                         'config' => [
                             'label' => [
                                 'en-GB' => 'Inquiry Uploaded File',
-                                'de-DE' => 'Inquiry Uploaded File',
+                                'de-DE' => 'Anfrage hochgeladene Date',
                             ],
                             'customFieldPosition' => 1,
                         ],
@@ -118,7 +118,6 @@ class PixInquiry extends Plugin
         $inquiryPaymentData = [
             'handlerIdentifier' => InquiryPayment::class,
             'name' => 'Anfrage',
-            'description' => 'Example payment description',
             'pluginId' => $pluginId,
         ];
 

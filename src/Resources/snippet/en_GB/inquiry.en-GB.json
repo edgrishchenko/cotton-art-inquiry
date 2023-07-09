@@ -1,5 +1,6 @@
 {
   "inquiry": {
-    "proceedToCart": "Request offer"
+    "proceedToCart": "Request offer",
+    "inquiryUploadFileHeader": "Upload file(s)"
   }
 }

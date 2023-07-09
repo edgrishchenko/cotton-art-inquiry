@@ -16,37 +16,57 @@
             {{ parent() }}
         {% endblock %}
 
-        {% block page_checkout_inquiry_upload_file %}
-            <div class="confirm-inquiry-upload-file">
-                <div class="card checkout-card">
-                    <div class="card-body">
-                        {% block page_checkout_inquiry_upload_file_header %}
-                            <div class="card-title">
-                                {{ "checkout.confirmTermsHeader"|trans|sw_sanitize }}
-                            </div>
-                        {% endblock %}
+        {% if isInquiry %}
+            {% block page_checkout_inquiry_upload_file %}
+                <div class="confirm-inquiry-upload-file">
+                    <div class="card checkout-card">
+                        <div class="card-body">
+                            {% block page_checkout_inquiry_upload_file_header %}
+                                <div class="card-title">
+                                    {{ "inquiry.inquiryUploadFileHeader"|trans|sw_sanitize }}
+                                </div>
+                            {% endblock %}
 
-                        {% block page_checkout_inquiry_upload_file_control %}
-                            <div class="form-input">
-                                <input type="file"
-                                       id="inquiryUploadFile"
-                                       form="confirmOrderForm"
-                                       name="inquiryUploadFile"
-                                       {% if allowedExtensions %}accept="{{ allowedExtensions }}"{% endif %}
-                                />
-                            </div>
-                        {% endblock %}
+                            {% block page_checkout_inquiry_upload_file_control %}
+                                <div class="form-input">
+                                    <label>
+                                        <input type="file"
+                                               id="inquiryUploadFile"
+                                               form="confirmOrderForm"
+                                               name="inquiryUploadFile[]"
+                                               multiple="multiple"
+                                               {% if allowedExtensions %}accept="{{ allowedExtensions }}"{% endif %}
+                                        />
+                                    </label>
+                                </div>
+                            {% endblock %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endblock %}
+            {% endblock %}
+        {% endif %}
 
         {% block page_checkout_confirm_address %}
             {{ parent() }}
         {% endblock %}
 
         {% block page_checkout_confirm_payment_shipping %}
-            {{ parent() }}
+            {% if isInquiry %}
+                <div class="confirm-payment-shipping">
+                    <div class="row">
+                        {% block page_checkout_confirm_shipping %}
+                            {% set PHYSICAL_STATE = constant('Shopware\\Core\\Content\\Product\\State::IS_PHYSICAL') %}
+                            {% if page.cart.lineItems.hasLineItemWithState(PHYSICAL_STATE) %}
+                                <div class="col-sm-12 confirm-shipping">
+                                    {% sw_include '@Storefront/storefront/page/checkout/confirm/confirm-shipping.html.twig' %}
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                </div>
+            {% else %}
+                {{ parent() }}
+            {% endif %}
         {% endblock %}
 
         {% block page_checkout_confirm_product_table %}

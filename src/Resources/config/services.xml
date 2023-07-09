@@ -33,11 +33,13 @@
 
         <service id="Pix\Inquiry\Subscriber\InquirySaveSubscriber">
             <argument type="service" id="request_stack"/>
+            <argument type="service" id="payment_method.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Pix\Inquiry\Service\FileUploader">
-            <argument type="string">%kernel.project_dir%/public/pixinquiry</argument>
+            <argument type="string">/pixinquiry</argument>
+            <argument type="string">%kernel.project_dir%/public</argument>
             <argument type="service" id="validator"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>

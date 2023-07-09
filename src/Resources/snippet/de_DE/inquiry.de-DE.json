@@ -1,5 +1,6 @@
 {
   "inquiry": {
-    "proceedToCart": "Angebot anfordern"
+    "proceedToCart": "Angebot anfordern",
+    "inquiryUploadFileHeader": "Datei(en) hochladen"
   }
 }

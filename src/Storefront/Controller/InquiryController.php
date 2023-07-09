@@ -189,9 +189,11 @@ class InquiryController extends StorefrontController
         try {
             $this->addAffiliateTracking($data, $request->getSession());
 
-            $inquiryUploadFile = $request->files->get('inquiryUploadFile');
-            if ($inquiryUploadFile) {
-                $this->fileUploader->upload($inquiryUploadFile, $context);
+            $inquiryUploadFiles = $request->files->get('inquiryUploadFile');
+            if (count($inquiryUploadFiles) > 0) {
+                $storefrontUrl = $this->getConfirmUrl($context, $request);
+                $uploadedFiles = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload($inquiryUploadFiles, $context));
+                $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
             }
 
             $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
