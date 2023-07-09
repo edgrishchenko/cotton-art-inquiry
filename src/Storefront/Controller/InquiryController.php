@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Pix\Inquiry\Storefront\Controller;
 
+use Pix\Inquiry\Service\FileUploader;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -39,6 +40,7 @@ use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedHook;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoader;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedHook;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,6 +64,7 @@ class InquiryController extends StorefrontController
         private readonly OrderService $orderService,
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
+        private readonly FileUploader $fileUploader,
         private readonly SystemConfigService $systemConfigService
     ) {
     }
@@ -86,7 +89,7 @@ class InquiryController extends StorefrontController
 
         return $this->renderStorefront(
             '@Storefront/storefront/page/checkout/address/index.html.twig',
-            ['redirectTo' => $redirect, 'errorRoute' => $errorRoute, 'page' => $page, 'data' => $data]
+            ['redirectTo' => $redirect, 'errorRoute' => $errorRoute, 'page' => $page, 'data' => $data, 'isInquiry' => true]
         );
     }
 
@@ -151,6 +154,8 @@ class InquiryController extends StorefrontController
             return $this->redirectToRoute('frontend.checkout.cart.page');
         }
 
+        $allowedFileExtensions = $this->systemConfigService->get('PixInquiry.config.allowedFileExtensions', $context->getSalesChannel()->getId());
+
         $page = $this->confirmPageLoader->load($request, $context);
         $cart = $page->getCart();
         $cartErrors = $cart->getErrors();
@@ -169,7 +174,9 @@ class InquiryController extends StorefrontController
             );
         }
 
-        return $this->renderStorefront('@Storefront/storefront/page/checkout/confirm/index.html.twig', ['page' => $page]);
+        return $this->renderStorefront('@Storefront/storefront/page/checkout/confirm/index.html.twig',
+            ['page' => $page, 'isInquiry' => true, 'allowedExtensions' => $allowedFileExtensions]
+        );
     }
 
     #[Route(path: '/inquiry/save', name: 'frontend.inquiry.save', options: ['seo' => false], methods: ['POST'])]
@@ -182,7 +189,13 @@ class InquiryController extends StorefrontController
         try {
             $this->addAffiliateTracking($data, $request->getSession());
 
+            $inquiryUploadFile = $request->files->get('inquiryUploadFile');
+            if ($inquiryUploadFile) {
+                $this->fileUploader->upload($inquiryUploadFile, $context);
+            }
+
             $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
+
         } catch (ConstraintViolationException $formViolations) {
             return $this->forwardToRoute('frontend.inquiry.confirm.page', ['formViolations' => $formViolations]);
         } catch (InvalidCartException|Error|EmptyCartException) {
@@ -197,6 +210,10 @@ class InquiryController extends StorefrontController
             }
             $message = $this->trans('error.' . $e->getErrorCode());
             $this->addFlash('danger', $message);
+
+            return $this->forwardToRoute('frontend.inquiry.confirm.page');
+        } catch (FileException $e) {
+            $this->addFlash('danger', $e->getMessage());
 
             return $this->forwardToRoute('frontend.inquiry.confirm.page');
         }
@@ -216,7 +233,7 @@ class InquiryController extends StorefrontController
     #[Route(path: '/inquiry/finish', name: 'frontend.inquiry.finish.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
     public function inquiryFinishPage(Request $request, SalesChannelContext $context, RequestDataBag $dataBag): Response
     {
-        if ($context->getCustomer() === null) {
+        if (!$context->getCustomer()) {
             return $this->redirectToRoute('frontend.inquiry.register.page');
         }
 
@@ -234,7 +251,7 @@ class InquiryController extends StorefrontController
             );
         }
 
-        if ($context->getCustomer()->getGuest() && $this->systemConfigService->get('core.cart.logoutGuestAfterCheckout', $context->getSalesChannelId())) {
+        if ($context->getCustomer()->getGuest() && $this->systemConfigService->get('core.cart.logoutGuestAfterCheckout', $context->getSalesChannel()->getId())) {
             $this->logoutRoute->logout($context, $dataBag);
         }
 

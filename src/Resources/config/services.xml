@@ -15,6 +15,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
             <argument type="service" id="sales_channel_domain.repository"/>
+            <argument type="service" id="Pix\Inquiry\Service\FileUploader"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <call method="setContainer">
@@ -36,7 +37,9 @@
         </service>
 
         <service id="Pix\Inquiry\Service\FileUploader">
-            <argument type="string">'%kernel.project_dir%/public/pixinquiry'</argument>
+            <argument type="string">%kernel.project_dir%/public/pixinquiry</argument>
+            <argument type="service" id="validator"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
     </services>
 </container>

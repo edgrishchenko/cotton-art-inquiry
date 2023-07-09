@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>Inquiry Upload Settings</title>
+        <title lang="de-DE">Upload-Einstellungen abfragen</title>
+
+        <input-field>
+            <name>allowedFileExtensions</name>
+            <label>Allowed file extensions (separate by comma)</label>
+            <label lang="de-DE">Zulässige Dateierweiterungen (durch Komma getrennt)</label>
+            <defaultValue>.png,.jpeg,.jpg,.pdf</defaultValue>
+        </input-field>
+
+        <input-field type="int">
+            <name>maxFileSize</name>
+            <label>Max file size (in MB)</label>
+            <label lang="de-DE">Maximale Dateigröße (in MB)</label>
+            <defaultValue>10</defaultValue>
+        </input-field>
+    </card>
+</config>

@@ -32,6 +32,7 @@
                                        id="inquiryUploadFile"
                                        form="confirmOrderForm"
                                        name="inquiryUploadFile"
+                                       {% if allowedExtensions %}accept="{{ allowedExtensions }}"{% endif %}
                                 />
                             </div>
                         {% endblock %}
@@ -49,7 +50,34 @@
         {% endblock %}
 
         {% block page_checkout_confirm_product_table %}
-            {{ parent() }}
+            {% if isInquiry %}
+                <div class="confirm-product">
+                    {% block page_checkout_confirm_table_container %}
+                        <div class="card">
+                            <div class="card-body">
+                                {% block page_checkout_confirm_table_header %}
+                                    {% sw_include '@Storefront/storefront/component/checkout/cart-header.html.twig' with {
+                                        showTaxPrice: true
+                                    } %}
+                                {% endblock %}
+
+                                {% block page_checkout_confirm_table_items %}
+                                    {% for lineItem in page.cart.lineItems %}
+                                        {% block page_checkout_confirm_table_item %}
+                                            {% sw_include '@Storefront/storefront/component/line-item/line-item.html.twig' with {
+                                                redirectTo: 'frontend.inquiry.confirm.page',
+                                                showTaxPrice: true
+                                            } %}
+                                        {% endblock %}
+                                    {% endfor %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endblock %}
+                </div>
+            {% else %}
+                {{ parent() }}
+            {% endif %}
         {% endblock %}
 
         {% block page_checkout_confirm_hidden_line_items_information %}
@@ -59,27 +87,32 @@
 {% endblock %}
 
 {% block page_checkout_aside_actions %}
-    <div class="checkout-aside-action">
-        <form id="confirmOrderForm"
-              action="{{ path('frontend.inquiry.save') }}"
-              data-form-preserver="true"
-              data-form-submit-loader="true"
-              data-form-add-history="true"
-              data-form-add-history-options='{{ formAddHistoryOptions|json_encode }}'
-              method="post">
-            {% block page_checkout_confirm_form_submit %}
-                <div class="d-grid">
-                    <button id="confirmFormSubmit"
-                            class="btn btn-primary btn-lg"
-                            form="confirmOrderForm"
-                            {% if page.cart.errors.blockResubmit %}
-                                disabled
-                            {% endif %}
-                            type="submit">
-                        {{ "checkout.confirmSubmit"|trans|sw_sanitize }}
-                    </button>
-                </div>
-            {% endblock %}
-        </form>
-    </div>
+    {% if isInquiry %}
+        <div class="checkout-aside-action">
+            <form id="confirmOrderForm"
+                  action="{{ path('frontend.inquiry.save') }}"
+                  data-form-preserver="true"
+                  data-form-submit-loader="true"
+                  data-form-add-history="true"
+                  data-form-add-history-options='{{ formAddHistoryOptions|json_encode }}'
+                  method="post"
+                  enctype="multipart/form-data">
+                {% block page_checkout_confirm_form_submit %}
+                    <div class="d-grid">
+                        <button id="confirmFormSubmit"
+                                class="btn btn-primary btn-lg"
+                                form="confirmOrderForm"
+                                {% if page.cart.errors.blockResubmit %}
+                                    disabled
+                                {% endif %}
+                                type="submit">
+                            {{ "checkout.confirmSubmit"|trans|sw_sanitize }}
+                        </button>
+                    </div>
+                {% endblock %}
+            </form>
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
 {% endblock %}

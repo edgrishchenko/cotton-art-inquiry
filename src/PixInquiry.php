@@ -68,8 +68,8 @@ class PixInquiry extends Plugin
                         'type' => CustomFieldTypes::TEXT,
                         'config' => [
                             'label' => [
-                                'en-GB' => 'Inquiry Upload File',
-                                'de-DE' => 'Inquiry Upload File',
+                                'en-GB' => 'Inquiry Uploaded File',
+                                'de-DE' => 'Inquiry Uploaded File',
                             ],
                             'customFieldPosition' => 1,
                         ],
