@@ -57,7 +57,7 @@
                         {% block page_checkout_confirm_shipping %}
                             {% set PHYSICAL_STATE = constant('Shopware\\Core\\Content\\Product\\State::IS_PHYSICAL') %}
                             {% if page.cart.lineItems.hasLineItemWithState(PHYSICAL_STATE) %}
-                                <div class="col-sm-12 confirm-shipping">
+                                <div class="col-sm-6 confirm-shipping">
                                     {% sw_include '@Storefront/storefront/page/checkout/confirm/confirm-shipping.html.twig' %}
                                 </div>
                             {% endif %}

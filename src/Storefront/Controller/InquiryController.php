@@ -189,6 +189,8 @@ class InquiryController extends StorefrontController
         try {
             $this->addAffiliateTracking($data, $request->getSession());
 
+            $request->request->set('isInquiry', true);
+
             $inquiryUploadFiles = $request->files->get('inquiryUploadFile');
             if (count($inquiryUploadFiles) > 0) {
                 $storefrontUrl = $this->getConfirmUrl($context, $request);

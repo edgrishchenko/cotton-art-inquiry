@@ -15,7 +15,7 @@ class InquirySaveSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly RequestStack $requestStack,
-         private readonly EntityRepository $paymentMethodRepository
+        private readonly EntityRepository $paymentMethodRepository
     ) {
     }
 
@@ -28,19 +28,23 @@ class InquirySaveSubscriber implements EventSubscriberInterface
 
     public function onCartConverted(CartConvertedEvent $event): void
     {
-        $orderData = $event->getConvertedCart();
+        if ($this->requestStack->getCurrentRequest()->request->get('isInquiry')) {
+            $orderData = $event->getConvertedCart();
 
-        $orderCustomFields = $orderData['customFields'] ?? [];
+            $orderData['transactions'][0]['paymentMethodId'] = $this->getInquiryPaymentMethodId($event->getSalesChannelContext());
 
-        $customInquiryFile = $this->requestStack->getCurrentRequest()->request->get('inquiryUploadedFiles');
+            $orderCustomFields = $orderData['customFields'] ?? [];
 
-        if ($customInquiryFile) {
-            $orderCustomFields['custom_pixinquiry_file'] = $customInquiryFile;
+            $customInquiryFile = $this->requestStack->getCurrentRequest()->request->get('inquiryUploadedFiles');
+
+            if ($customInquiryFile) {
+                $orderCustomFields['custom_pixinquiry_file'] = $customInquiryFile;
+            }
+
+            $orderData['customFields'] = $orderCustomFields;
+
+            $event->setConvertedCart($orderData);
         }
-
-        $orderData['customFields'] = $orderCustomFields;
-
-        $event->setConvertedCart($orderData);
     }
 
     private function getInquiryPaymentMethodId(SalesChannelContext $context): string
