@@ -1,0 +1,54 @@
+{% sw_extends '@Storefront/storefront/page/checkout/finish/finish-details.html.twig' %}
+
+{% block page_checkout_finish_header %}
+    {% if isInquiry %}
+        <h1 class="finish-header">
+            {% if page.changedPayment == true %}
+                {{ "checkout.finishUpdateHeader"|trans|sw_sanitize }}
+            {% else %}
+                {{ "inquiry.finishHeader"|trans({
+                    '%shop%': config('core.basicInformation.shopName')
+                })|sw_sanitize }}
+            {% endif %}
+        </h1>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_ordernumber %}
+    {% if isInquiry %}
+        <p class="finish-ordernumber" data-order-number="{{ page.order.orderNumber }}">
+            {{ "inquiry.finishInfoOrdernumber"|trans|sw_sanitize }}{{ page.order.orderNumber }}
+        </p>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_teaser %}
+    {% if isInquiry %}
+        {% if page.changedPayment != true %}
+            <p class="finish-teaser">{{ "inquiry.finishInfoConfirmationMail"|trans|sw_sanitize }}</p>
+        {% endif %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_order_address %}
+    {% if isInquiry %}
+        <div class="col-md-12 finish-address">
+            {% sw_include '@Storefront/storefront/page/checkout/finish/finish-address.html.twig' %}
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_finish_order_details %}
+    {% if isInquiry %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

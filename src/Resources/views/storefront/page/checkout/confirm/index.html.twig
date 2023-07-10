@@ -3,9 +3,15 @@
 {% block page_checkout_main_content %}
     {% block page_checkout_confirm %}
         {% block page_checkout_confirm_header %}
-            <h1 class="confirm-main-header">
-                {{ "checkout.confirmHeader"|trans|sw_sanitize }}
-            </h1>
+            {% if isInquiry %}
+                <h1 class="confirm-main-header">
+                    {{ "inquiry.confirmHeader"|trans|sw_sanitize }}
+                </h1>
+            {% else %}
+                <h1 class="confirm-main-header">
+                    {{ "checkout.confirmHeader"|trans|sw_sanitize }}
+                </h1>
+            {% endif %}
         {% endblock %}
 
         {% block page_checkout_confirm_alerts %}
@@ -55,12 +61,7 @@
                 <div class="confirm-payment-shipping">
                     <div class="row">
                         {% block page_checkout_confirm_shipping %}
-                            {% set PHYSICAL_STATE = constant('Shopware\\Core\\Content\\Product\\State::IS_PHYSICAL') %}
-                            {% if page.cart.lineItems.hasLineItemWithState(PHYSICAL_STATE) %}
-                                <div class="col-sm-6 confirm-shipping">
-                                    {% sw_include '@Storefront/storefront/page/checkout/confirm/confirm-shipping.html.twig' %}
-                                </div>
-                            {% endif %}
+                            {{ parent() }}
                         {% endblock %}
                     </div>
                 </div>
@@ -118,17 +119,21 @@
                   method="post"
                   enctype="multipart/form-data">
                 {% block page_checkout_confirm_form_submit %}
-                    <div class="d-grid">
-                        <button id="confirmFormSubmit"
-                                class="btn btn-primary btn-lg"
-                                form="confirmOrderForm"
-                                {% if page.cart.errors.blockResubmit %}
-                                    disabled
-                                {% endif %}
-                                type="submit">
-                            {{ "checkout.confirmSubmit"|trans|sw_sanitize }}
-                        </button>
-                    </div>
+                    {% if isInquiry %}
+                        <div class="d-grid">
+                            <button id="confirmFormSubmit"
+                                    class="btn btn-primary btn-lg"
+                                    form="confirmOrderForm"
+                                    {% if page.cart.errors.blockResubmit %}
+                                        disabled
+                                    {% endif %}
+                                    type="submit">
+                                {{ "inquiry.confirmSubmit"|trans|sw_sanitize }}
+                            </button>
+                        </div>
+                    {% else %}
+                        {{ parent() }}
+                    {% endif %}
                 {% endblock %}
             </form>
         </div>

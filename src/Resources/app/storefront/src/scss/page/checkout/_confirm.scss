@@ -1,37 +1,3 @@
-.is-act-inquiryconfirmpage {
-  .checkout {
-    padding-top: 70px;
-
-    .checkout-container {
-      @extend .row;
-    }
-
-    .checkout-main {
-      @extend .col-lg-8;
-      @extend .offset-lg-2;
-    }
-
-    .checkout-additional {
-      @extend .col-sm-6;
-      @extend .offset-lg-2;
-      @extend .col-lg-4;
-      margin-top: $spacer;
-      margin-bottom: $spacer;
-    }
-
-    .checkout-aside {
-      @extend .col;
-      @extend .col-md-6;
-      @extend .offset-md-6;
-      @extend .col-lg-4;
-    }
-
-    .checkout-aside-no-offset {
-      @include make-col-offset(0);
-    }
-  }
-}
-
 .confirm-inquiry-upload-file {
   margin-bottom: 1.5rem;
 }

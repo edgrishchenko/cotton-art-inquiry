@@ -1,6 +1,11 @@
 {
   "inquiry": {
     "proceedToCart": "Angebot anfordern",
+    "confirmHeader": "Anfrage bestätigen",
+    "confirmSubmit": "Anfrage abschicken",
+    "finishHeader": "Vielen Dank für Ihre Anfrage bei %shop%!",
+    "finishInfoOrdernumber": "Ihre Anfragenummer: #",
+    "finishInfoConfirmationMail": "Die Bestätigungs-E-Mail für die Anfrage wurde gesendet.",
     "inquiryUploadFileHeader": "Datei(en) hochladen"
   }
 }

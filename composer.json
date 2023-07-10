@@ -1,6 +1,7 @@
 {
   "name": "pix/inquiry",
   "description": "Submit request as order",
+  "version": "1.0.0",
   "type": "shopware-platform-plugin",
   "license": "MIT",
   "authors": [

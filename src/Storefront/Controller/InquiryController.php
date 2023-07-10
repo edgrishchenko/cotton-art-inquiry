@@ -144,7 +144,7 @@ class InquiryController extends StorefrontController
     }
 
     #[Route(path: '/inquiry/confirm', name: 'frontend.inquiry.confirm.page', options: ['seo' => false], defaults: ['XmlHttpRequest' => true, '_noStore' => true], methods: ['GET'])]
-    public function inquiryConfirmPage(Request $request, SalesChannelContext $context): Response
+    public function confirmPage(Request $request, SalesChannelContext $context): Response
     {
         if (!$context->getCustomer()) {
             return $this->redirectToRoute('frontend.inquiry.register.page');
@@ -235,7 +235,7 @@ class InquiryController extends StorefrontController
     }
 
     #[Route(path: '/inquiry/finish', name: 'frontend.inquiry.finish.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
-    public function inquiryFinishPage(Request $request, SalesChannelContext $context, RequestDataBag $dataBag): Response
+    public function finishPage(Request $request, SalesChannelContext $context, RequestDataBag $dataBag): Response
     {
         if (!$context->getCustomer()) {
             return $this->redirectToRoute('frontend.inquiry.register.page');
@@ -259,7 +259,9 @@ class InquiryController extends StorefrontController
             $this->logoutRoute->logout($context, $dataBag);
         }
 
-        return $this->renderStorefront('@Storefront/storefront/page/checkout/finish/index.html.twig', ['page' => $page]);
+        return $this->renderStorefront('@Storefront/storefront/page/checkout/finish/index.html.twig',
+            ['page' => $page, 'isInquiry' => true]
+        );
     }
 
     private function routeNeedsReload(ErrorCollection $cartErrors): bool
