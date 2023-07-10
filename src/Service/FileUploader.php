@@ -23,11 +23,15 @@ class FileUploader
     {
         $definition = [];
         if ($this->getMaxFileSize($context)) {
-            $definition['maxSize'] = $this->getMaxFileSize($context);
+            $definition['maxSize'] = $this->getMaxFileSize($context) . 'M';
         }
 
         if ($this->getAllowedFileExtensions($context)) {
-            $definition['extensions'] = $this->getAllowedFileExtensions($context);
+            $allowedFileExtensions = array_map(function ($allowedFileExtension): string {
+                return substr(trim($allowedFileExtension), 1);
+            }, explode(',',  $this->getAllowedFileExtensions($context)));
+
+            $definition['extensions'] = $allowedFileExtensions;
         }
 
         $slugger = new AsciiSlugger();
@@ -57,18 +61,16 @@ class FileUploader
         return $uploadedFiles;
     }
 
-    private function getAllowedFileExtensions(SalesChannelContext $context): array
+    private function getAllowedFileExtensions(SalesChannelContext $context): string
     {
         $allowedFileExtensions = $this->systemConfigService->get('PixInquiry.config.allowedFileExtensions', $context->getSalesChannelId());
 
-        return array_map(fn($allowedFileExtension): string => substr(trim($allowedFileExtension), 1), explode(',', $allowedFileExtensions));
+        return $allowedFileExtensions;
     }
 
-    private function getMaxFileSize(SalesChannelContext $context): string
+    private function getMaxFileSize(SalesChannelContext $context): int
     {
-        $maxFileSize = $this->systemConfigService->get('PixInquiry.config.maxFileSize', $context->getSalesChannelId());
-
-        return $maxFileSize . 'M';
+        return $this->systemConfigService->get('PixInquiry.config.maxFileSize', $context->getSalesChannelId());
     }
 
     public function getTargetDirectory(): string
