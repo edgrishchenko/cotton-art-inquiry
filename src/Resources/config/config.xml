@@ -6,17 +6,17 @@
         <title lang="de-DE">Upload-Einstellungen abfragen</title>
 
         <input-field>
-            <name>allowedFileExtensions</name>
-            <label>Allowed file extensions (separate by comma)</label>
-            <label lang="de-DE">Zulässige Dateierweiterungen (durch Komma getrennt)</label>
-            <defaultValue>.png,.jpeg,.jpg,.pdf</defaultValue>
+            <name>allowedMimeTypes</name>
+            <label>Allowed MIME types (separate by comma)</label>
+            <label lang="de-DE">Zulässige MIME-Typen(durch Komma getrennt)</label>
+            <defaultValue>image/jpeg, image/png,text/csv, application/msword, application/pdf</defaultValue>
         </input-field>
 
         <input-field type="int">
             <name>maxFileSize</name>
             <label>Max file size (in MB)</label>
             <label lang="de-DE">Maximale Dateigröße (in MB)</label>
-            <defaultValue>10</defaultValue>
+            <defaultValue>5</defaultValue>
         </input-field>
     </card>
 </config>

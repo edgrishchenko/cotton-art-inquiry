@@ -23,15 +23,15 @@ class FileUploader
     {
         $definition = [];
         if ($this->getMaxFileSize($context)) {
-            $definition['maxSize'] = $this->getMaxFileSize($context) . 'M';
+            $definition['maxSize'] = $this->getMaxFileSize($context) . 'm';
         }
 
-        if ($this->getAllowedFileExtensions($context)) {
-            $allowedFileExtensions = array_map(function ($allowedFileExtension): string {
-                return substr(trim($allowedFileExtension), 1);
-            }, explode(',',  $this->getAllowedFileExtensions($context)));
+        if ($this->getAllowedMimeTypes($context)) {
+            $allowedMimeTypes = array_map(function ($allowedMimeType): string {
+                return trim($allowedMimeType);
+            }, explode(',',  $this->getAllowedMimeTypes($context)));
 
-            $definition['extensions'] = $allowedFileExtensions;
+            $definition['mimeTypes'] = $allowedMimeTypes;
         }
 
         $slugger = new AsciiSlugger();
@@ -61,11 +61,9 @@ class FileUploader
         return $uploadedFiles;
     }
 
-    private function getAllowedFileExtensions(SalesChannelContext $context): string
+    private function getAllowedMimeTypes(SalesChannelContext $context): string
     {
-        $allowedFileExtensions = $this->systemConfigService->get('PixInquiry.config.allowedFileExtensions', $context->getSalesChannelId());
-
-        return $allowedFileExtensions;
+        return $this->systemConfigService->get('PixInquiry.config.allowedMimeTypes', $context->getSalesChannelId());
     }
 
     private function getMaxFileSize(SalesChannelContext $context): int

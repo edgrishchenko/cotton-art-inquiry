@@ -49,7 +49,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-#[Route(defaults: ['_routeScope' => ['storefront']])]
+/**
+ * @Route(defaults={"_routeScope"={"storefront"}})
+ */
 class InquiryController extends StorefrontController
 {
     private const REDIRECTED_FROM_SAME_ROUTE = 'redirected';
@@ -69,7 +71,9 @@ class InquiryController extends StorefrontController
     ) {
     }
 
-    #[Route(path: '/inquiry/register', name: 'frontend.inquiry.register.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
+    /**
+     * @Route("/inquiry/register", name="frontend.inquiry.register.page", options={"seo"=false}, defaults={"_noStore"=true}, methods={"GET"})
+     */
     public function inquiryRegisterPage(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
         $redirect = $request->get('redirectTo', 'frontend.inquiry.confirm.page');
@@ -93,7 +97,9 @@ class InquiryController extends StorefrontController
         );
     }
 
-    #[Route(path: '/inquiry/register', name: 'frontend.inquiry.register.save', defaults: ['_captcha' => true], methods: ['POST'])]
+    /**
+     * @Route("/inquiry/register", name="frontend.inquiry.register.save", defaults={"_captcha"=true}, methods={"POST"})
+     */
     public function register(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
         if ($context->getCustomer()) {
@@ -143,7 +149,9 @@ class InquiryController extends StorefrontController
         return $this->createActionResponse($request);
     }
 
-    #[Route(path: '/inquiry/confirm', name: 'frontend.inquiry.confirm.page', options: ['seo' => false], defaults: ['XmlHttpRequest' => true, '_noStore' => true], methods: ['GET'])]
+    /**
+     * @Route("/inquiry/confirm", name="frontend.inquiry.confirm.page", options={"seo"=false}, defaults={"_noStore"=true, "XmlHttpRequest"=true}, methods={"GET"})
+     */
     public function confirmPage(Request $request, SalesChannelContext $context): Response
     {
         if (!$context->getCustomer()) {
@@ -154,7 +162,7 @@ class InquiryController extends StorefrontController
             return $this->redirectToRoute('frontend.checkout.cart.page');
         }
 
-        $allowedFileExtensions = $this->systemConfigService->get('PixInquiry.config.allowedFileExtensions', $context->getSalesChannel()->getId());
+        $allowedMimeTypes = $this->systemConfigService->get('PixInquiry.config.allowedMimeTypes', $context->getSalesChannel()->getId());
 
         $page = $this->confirmPageLoader->load($request, $context);
         $cart = $page->getCart();
@@ -175,11 +183,13 @@ class InquiryController extends StorefrontController
         }
 
         return $this->renderStorefront('@Storefront/storefront/page/checkout/confirm/index.html.twig',
-            ['page' => $page, 'isInquiry' => true, 'allowedExtensions' => $allowedFileExtensions]
+            ['page' => $page, 'isInquiry' => true, 'allowedMimeTypes' => $allowedMimeTypes]
         );
     }
 
-    #[Route(path: '/inquiry/save', name: 'frontend.inquiry.save', options: ['seo' => false], methods: ['POST'])]
+    /**
+     * @Route("/inquiry/save", name="frontend.inquiry.save", options={"seo"=false}, methods={"POST"})
+     */
     public function inquirySave(RequestDataBag $data, SalesChannelContext $context, Request $request): Response
     {
         if (!$context->getCustomer()) {
@@ -234,7 +244,9 @@ class InquiryController extends StorefrontController
         }
     }
 
-    #[Route(path: '/inquiry/finish', name: 'frontend.inquiry.finish.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
+    /**
+     * @Route("/inquiry/finish", name="frontend.inquiry.finish.page", options={"seo"=false}, defaults={"_noStore"=true}, methods={"GET"})
+     */
     public function finishPage(Request $request, SalesChannelContext $context, RequestDataBag $dataBag): Response
     {
         if (!$context->getCustomer()) {
