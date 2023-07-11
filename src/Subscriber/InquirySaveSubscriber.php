@@ -33,7 +33,6 @@ class InquirySaveSubscriber implements EventSubscriberInterface
             $orderData = $event->getConvertedCart();
 
             $orderData['transactions'][0]['paymentMethodId'] = $this->getInquiryPaymentMethodId($event->getSalesChannelContext());
-            $orderData['deliveries'][0]['shippingMethodId'] = Uuid::randomHex();
 
             $orderCustomFields = $orderData['customFields'] ?? [];
 
