@@ -3,7 +3,6 @@
 namespace Pix\Inquiry\Storefront\Controller;
 
 use Pix\Inquiry\Service\FileUploader;
-use Pix\Inquiry\Service\InquiryMailService;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -68,7 +67,6 @@ class InquiryController extends StorefrontController
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
-        private readonly InquiryMailService $mailService,
         private readonly SystemConfigService $systemConfigService
     ) {
     }
@@ -203,8 +201,6 @@ class InquiryController extends StorefrontController
 
             $context->addState('inquiry-saved');
 
-            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
-
             $inquiryUploadFiles = $request->files->get('inquiryUploadFile');
             if (count($inquiryUploadFiles) > 0) {
                 $storefrontUrl = $this->getConfirmUrl($context, $request);
@@ -212,8 +208,7 @@ class InquiryController extends StorefrontController
                 $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
             }
 
-            $this->mailService->sendInquiryEmailTemplate($context);
-
+            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
         } catch (ConstraintViolationException $formViolations) {
             return $this->forwardToRoute('frontend.inquiry.confirm.page', ['formViolations' => $formViolations]);
         } catch (InvalidCartException|Error|EmptyCartException) {

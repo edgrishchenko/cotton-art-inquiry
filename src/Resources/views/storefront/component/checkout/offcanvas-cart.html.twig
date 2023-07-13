@@ -15,22 +15,13 @@
         {% endblock %}
 
         {% block component_offcanvas_cart_actions_inquiry %}
-            {# @deprecated tag:v6.5.0 - Bootstrap v5 removes `btn-block` class, use `d-grid` wrapper instead #}
-            {% if feature('v6.5.0.0') %}
-                <div class="d-grid">
-                    <a href="{{ path('frontend.inquiry.register.page') }}"
-                       class="btn btn-link"
-                       title="{{ "inquiry.proceedToCart"|trans|striptags }}">
-                        {{ "inquiry.proceedToCart"|trans|sw_sanitize }}
-                    </a>
-                </div>
-            {% else %}
+            <div class="d-grid">
                 <a href="{{ path('frontend.inquiry.register.page') }}"
-                   class="btn btn-block btn-link"
+                   class="btn btn-link"
                    title="{{ "inquiry.proceedToCart"|trans|striptags }}">
                     {{ "inquiry.proceedToCart"|trans|sw_sanitize }}
                 </a>
-            {% endif %}
+            </div>
         {% endblock %}
     </div>
 {% endblock %}

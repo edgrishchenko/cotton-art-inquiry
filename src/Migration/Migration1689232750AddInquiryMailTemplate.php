@@ -125,8 +125,8 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
             ",[
                 'mailTemplateId' => Uuid::fromHexToBytes($mailTemplateId),
                 'languageId' => $enGbLangId,
-                'senderName' => '{{ salesChannel.name }}',
-                'subject' => 'Your request at {{ salesChannel.name }}',
+                'senderName' => '{{ shopName }}',
+                'subject' => 'Your request at {{ shopName }}',
                 'description' => 'Inquiry confirmation',
                 'contentHtml' => $this->getContentHtmlEn(),
                 'contentPlain' => $this->getContentPlainEn(),
@@ -143,8 +143,8 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
             ",[
                 'mailTemplateId' => Uuid::fromHexToBytes($mailTemplateId),
                 'languageId' => $deDeLangId,
-                'senderName' => '{{ salesChannel.name }}',
-                'subject' => 'Ihre Anfrage bei {{ salesChannel.name }}',
+                'senderName' => '{{ shopName }}',
+                'subject' => 'Ihre Anfrage bei {{ shopName }}',
                 'description' => 'Anfrage bestätigung',
                 'contentHtml' => $this->getContentHtmlDe(),
                 'contentPlain' => $this->getContentPlainDe(),
@@ -161,7 +161,7 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
         {% set currencyIsoCode = order.currency.isoCode %}
         Hello {% if order.orderCustomer.salutation %}{{ order.orderCustomer.salutation.translated.letterName ~ ' ' }}{% endif %}{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},<br>
         <br>
-        Thank you for your inquiry at {{ salesChannel.name }} (Number: {{ order.orderNumber }}) on {{ order.orderDateTime|format_datetime('medium', 'short', locale='en-GB') }}.<br>
+        Thank you for your inquiry at {{ shopName }} (Number: {{ order.orderNumber }}) on {{ order.orderDateTime|format_datetime('medium', 'short', locale='en-GB') }}.<br>
         <br>
         <strong>Information on your inquiry:</strong><br>
         <br>
@@ -307,7 +307,7 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
         {% set currencyIsoCode = order.currency.isoCode %}
         Hello {% if order.orderCustomer.salutation %}{{ order.orderCustomer.salutation.translated.letterName ~ ' ' }}{% endif %}{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},
         
-        Thank you for your inquiry at {{ salesChannel.name }} (Number: {{ order.orderNumber }}) on {{ order.orderDateTime|format_datetime('medium', 'short', locale='en-GB') }}.
+        Thank you for your inquiry at {{ shopName }} (Number: {{ order.orderNumber }}) on {{ order.orderDateTime|format_datetime('medium', 'short', locale='en-GB') }}.
         
         Information on your inquiry:
         
@@ -378,7 +378,7 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
         
         Hallo {% if order.orderCustomer.salutation %}{{ order.orderCustomer.salutation.translated.letterName ~ ' ' }}{% endif %}{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},<br>
         <br>
-        Vielen Dank fuer Ihre Anfrage bei {{ salesChannel.name }} (Nummer: {{ order.orderNumber }}) am {{ order.orderDateTime|format_datetime('medium', 'short', locale='de-DE') }} bei uns eingegangen.<br>
+        Vielen Dank fuer Ihre Anfrage bei {{ shopName }} (Nummer: {{ order.orderNumber }}) am {{ order.orderDateTime|format_datetime('medium', 'short', locale='de-DE') }} bei uns eingegangen.<br>
         <br>
         <strong>Informationen zu Ihrer Anfrage:</strong><br>
         <br>
@@ -524,7 +524,7 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
         {% set currencyIsoCode = order.currency.isoCode %}
         Hallo {% if order.orderCustomer.salutation %}{{ order.orderCustomer.salutation.translated.letterName ~ ' ' }}{% endif %}{{ order.orderCustomer.firstName }} {{ order.orderCustomer.lastName }},
         
-        Vielen Dank fuer Ihre Anfrage bei {{ salesChannel.name }} (Nummer: {{ order.orderNumber }}) am {{ order.orderDateTime|format_datetime('medium', 'short', locale='de-DE') }} bei uns eingegangen.
+        Vielen Dank fuer Ihre Anfrage bei {{ shopName }} (Nummer: {{ order.orderNumber }}) am {{ order.orderDateTime|format_datetime('medium', 'short', locale='de-DE') }} bei uns eingegangen.
         
         Informationen zu Ihrer Anfrage:
         

@@ -41,7 +41,7 @@
                                                form="confirmOrderForm"
                                                name="inquiryUploadFile[]"
                                                multiple="multiple"
-                                               {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
+                                               {% if allowedExtensions %}accept="{{ allowedExtensions }}"{% endif %}
                                         />
                                     </label>
                                 </div>
@@ -118,41 +118,19 @@
                   data-form-add-history-options='{{ formAddHistoryOptions|json_encode }}'
                   method="post"
                   enctype="multipart/form-data">
-
-                {# @deprecated tag:v6.5.0 - Block page_checkout_aside_actions_csrf will be removed. #}
-{#                {% block page_checkout_aside_actions_csrf %}#}
-{#                    {% if isInquiry %}#}
-{#                        {{ sw_csrf('frontend.inquiry.save') }}#}
-{#                    {% else %}#}
-{#                        {{ parent() }}#}
-{#                    {% endif %}#}
-{#                {% endblock %}#}
-
                 {% block page_checkout_confirm_form_submit %}
                     {% if isInquiry %}
-                        {% if feature('v6.5.0.0') %}
-                            <div class="d-grid">
-                                <button id="confirmFormSubmit"
-                                        class="btn btn-primary btn-lg"
-                                        form="confirmOrderForm"
-                                    {% if page.cart.errors.blockOrder %}
+                        <div class="d-grid">
+                            <button id="confirmFormSubmit"
+                                    class="btn btn-primary btn-lg"
+                                    form="confirmOrderForm"
+                                    {% if page.cart.errors.blockResubmit %}
                                         disabled
                                     {% endif %}
-                                        type="submit">
-                                    {{ "inquiry.confirmSubmit"|trans|sw_sanitize }}
-                                </button>
-                            </div>
-                        {% else %}
-                            <button id="confirmFormSubmit"
-                                    class="btn btn-primary btn-block btn-lg"
-                                    form="confirmOrderForm"
-                                {% if page.cart.errors.blockOrder %}
-                                    disabled
-                                {% endif %}
                                     type="submit">
                                 {{ "inquiry.confirmSubmit"|trans|sw_sanitize }}
                             </button>
-                        {% endif %}
+                        </div>
                     {% else %}
                         {{ parent() }}
                     {% endif %}
