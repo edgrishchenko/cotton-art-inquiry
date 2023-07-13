@@ -40,7 +40,8 @@ class InquiryMailService extends AbstractMailService
 
             $uploadedFiles = explode(', ', $orderData->getCustomFields()['custom_pixinquiry_file']);
 
-            $data['shopName'] = $shopName;
+            $templateData['shopName'] = $shopName;
+
             $data['recipients'][$shopOwnerEmail] = $shopName;
             $data['senderName'] = $inquiryMailTemplate->getSenderName();
             $data['templateId'] = $inquiryMailTemplate->getId();
