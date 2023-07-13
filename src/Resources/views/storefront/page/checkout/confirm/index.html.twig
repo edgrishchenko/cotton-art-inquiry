@@ -120,13 +120,13 @@
                   enctype="multipart/form-data">
 
                 {# @deprecated tag:v6.5.0 - Block page_checkout_aside_actions_csrf will be removed. #}
-                {% block page_checkout_aside_actions_csrf %}
-                    {% if isInquiry %}
-                        {{ sw_csrf('frontend.inquiry.save') }}
-                    {% else %}
-                        {{ parent() }}
-                    {% endif %}
-                {% endblock %}
+{#                {% block page_checkout_aside_actions_csrf %}#}
+{#                    {% if isInquiry %}#}
+{#                        {{ sw_csrf('frontend.inquiry.save') }}#}
+{#                    {% else %}#}
+{#                        {{ parent() }}#}
+{#                    {% endif %}#}
+{#                {% endblock %}#}
 
                 {% block page_checkout_confirm_form_submit %}
                     {% if isInquiry %}

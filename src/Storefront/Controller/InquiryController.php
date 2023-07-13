@@ -3,6 +3,7 @@
 namespace Pix\Inquiry\Storefront\Controller;
 
 use Pix\Inquiry\Service\FileUploader;
+use Pix\Inquiry\Service\InquiryMailService;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -67,6 +68,7 @@ class InquiryController extends StorefrontController
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
+        private readonly InquiryMailService $mailService,
         private readonly SystemConfigService $systemConfigService
     ) {
     }
@@ -199,7 +201,9 @@ class InquiryController extends StorefrontController
         try {
             $this->addAffiliateTracking($data, $request->getSession());
 
-            $request->request->set('isInquiry', true);
+            $context->addState('inquiry-saved');
+
+            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
 
             $inquiryUploadFiles = $request->files->get('inquiryUploadFile');
             if (count($inquiryUploadFiles) > 0) {
@@ -208,7 +212,7 @@ class InquiryController extends StorefrontController
                 $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
             }
 
-            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
+            $this->mailService->sendInquiryEmailTemplate($context);
 
         } catch (ConstraintViolationException $formViolations) {
             return $this->forwardToRoute('frontend.inquiry.confirm.page', ['formViolations' => $formViolations]);
@@ -234,6 +238,7 @@ class InquiryController extends StorefrontController
 
         try {
             $finishUrl = $this->generateUrl('frontend.inquiry.finish.page', ['orderId' => $orderId]);
+
             $errorUrl = $this->generateUrl('frontend.account.edit-order.page', ['orderId' => $orderId]);
 
             $response = Profiler::trace('handle-payment', fn (): ?RedirectResponse => $this->paymentService->handlePaymentByOrder($orderId, $data, $context, $finishUrl, $errorUrl));

@@ -10,9 +10,9 @@
                       method="post">
 
                     {# @deprecated tag:v6.5.0 - Block page_checkout_cart_add_promotion_csrf will be removed. #}
-                    {% block page_checkout_cart_add_promotion_csrf %}
-                        {{ sw_csrf('frontend.checkout.promotion.add') }}
-                    {% endblock %}
+{#                    {% block page_checkout_cart_add_promotion_csrf %}#}
+{#                        {{ sw_csrf('frontend.checkout.promotion.add') }}#}
+{#                    {% endblock %}#}
 
                     {% block page_checkout_cart_add_promotion_forward %}
                         <input type="hidden"

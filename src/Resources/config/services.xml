@@ -16,6 +16,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Pix\Inquiry\Service\FileUploader"/>
+            <argument type="service" id="Pix\Inquiry\Service\InquiryMailService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <call method="setContainer">
@@ -40,6 +41,11 @@
         <service id="Pix\Inquiry\Subscriber\InquiryConfirmSubscriber">
             <argument type="service" id="payment_method.repository"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Pix\Inquiry\Service\InquiryMailService" decorates="Shopware\Core\Content\Mail\Service\MailService">
+                <argument type="service" id="Pix\Inquiry\Service\InquiryMailService.inner" />
+                <argument type="service" id="mail_template.repository"/>
         </service>
 
         <service id="Pix\Inquiry\Service\FileUploader">

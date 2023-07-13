@@ -29,7 +29,9 @@ class InquirySaveSubscriber implements EventSubscriberInterface
 
     public function onCartConverted(CartConvertedEvent $event): void
     {
-        if ($this->requestStack->getCurrentRequest()->request->get('isInquiry')) {
+        $isInquirySaved = in_array('inquiry-saved', $event->getSalesChannelContext()->getContext()->getStates());
+
+        if ($isInquirySaved) {
             $orderData = $event->getConvertedCart();
 
             $orderData['transactions'][0]['paymentMethodId'] = $this->getInquiryPaymentMethodId($event->getSalesChannelContext());
