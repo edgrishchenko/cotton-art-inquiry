@@ -15,13 +15,21 @@
         {% endblock %}
 
         {% block component_offcanvas_cart_actions_inquiry %}
-            <div class="d-grid">
+            {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+                <div class="d-grid">
+                    <a href="{{ path('frontend.inquiry.register.page') }}"
+                       class="btn btn-link"
+                       title="{{ "inquiry.proceedToCart"|trans|striptags }}">
+                        {{ "inquiry.proceedToCart"|trans|sw_sanitize }}
+                    </a>
+                </div>
+            {% else %}
                 <a href="{{ path('frontend.inquiry.register.page') }}"
-                   class="btn btn-link"
+                   class="btn btn-block btn-link"
                    title="{{ "inquiry.proceedToCart"|trans|striptags }}">
                     {{ "inquiry.proceedToCart"|trans|sw_sanitize }}
                 </a>
-            </div>
+            {% endif %}
         {% endblock %}
     </div>
 {% endblock %}

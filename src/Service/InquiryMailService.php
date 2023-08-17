@@ -38,7 +38,11 @@ class InquiryMailService extends AbstractMailService
             $shopOwnerEmail = $this->systemConfigService->get('core.basicInformation.email');
             $shopName = $this->systemConfigService->get('core.basicInformation.shopName');
 
-            $uploadedFiles = explode(', ', $orderData->getCustomFields()['custom_pixinquiry_file']);
+            $uploadedFiles = array();
+
+            if (array_key_exists('custom_pixinquiry_file', $orderData->getCustomFields())) {
+                $uploadedFiles = explode(', ', $orderData->getCustomFields()['custom_pixinquiry_file']);
+            }
 
             $templateData['shopName'] = $shopName;
 

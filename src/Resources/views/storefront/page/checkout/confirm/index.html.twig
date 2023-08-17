@@ -116,21 +116,49 @@
                   data-form-submit-loader="true"
                   data-form-add-history="true"
                   data-form-add-history-options='{{ formAddHistoryOptions|json_encode }}'
+                {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+                {% else %}
+                    data-form-csrf-handler="true"
+                {% endif %}
                   method="post"
                   enctype="multipart/form-data">
+
+                {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is not defined %}
+                    {# @deprecated tag:v6.5.0 - Block page_checkout_aside_actions_csrf will be removed. #}
+                    {% block page_checkout_aside_actions_csrf %}
+                        {% if isInquiry %}
+                            {{ sw_csrf('frontend.inquiry.save') }}
+                        {% else %}
+                            {{ parent() }}
+                        {% endif %}
+                    {% endblock %}
+                {% endif %}
+
                 {% block page_checkout_confirm_form_submit %}
                     {% if isInquiry %}
-                        <div class="d-grid">
-                            <button id="confirmFormSubmit"
-                                    class="btn btn-primary btn-lg"
-                                    form="confirmOrderForm"
+                        {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+                            <div class="d-grid">
+                                <button id="confirmFormSubmit"
+                                        class="btn btn-primary btn-lg"
+                                        form="confirmOrderForm"
                                     {% if page.cart.errors.blockResubmit %}
                                         disabled
                                     {% endif %}
+                                        type="submit">
+                                    {{ "inquiry.confirmSubmit"|trans|sw_sanitize }}
+                                </button>
+                            </div>
+                        {% else %}
+                            <button id="confirmFormSubmit"
+                                    class="btn btn-primary btn-block btn-lg"
+                                    form="confirmOrderForm"
+                                {% if page.cart.errors.blockOrder %}
+                                    disabled
+                                {% endif %}
                                     type="submit">
                                 {{ "inquiry.confirmSubmit"|trans|sw_sanitize }}
                             </button>
-                        </div>
+                        {% endif %}
                     {% else %}
                         {{ parent() }}
                     {% endif %}

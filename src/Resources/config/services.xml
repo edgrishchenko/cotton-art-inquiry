@@ -54,5 +54,9 @@
             <argument type="service" id="validator"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
+
+        <service id="Pix\Inquiry\Extension\CsrfFunctionExtension">
+            <tag name="twig.extension"/>
+        </service>
     </services>
 </container>
