@@ -67,7 +67,7 @@ class InquiryController extends StorefrontController
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
-        private readonly SystemConfigService $systemConfigService
+        private readonly SystemConfigService $systemConfigService,
     ) {
     }
 
@@ -76,6 +76,8 @@ class InquiryController extends StorefrontController
      */
     public function inquiryRegisterPage(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
+        $context->addState('inquiry');
+
         $redirect = $request->get('redirectTo', 'frontend.inquiry.confirm.page');
         $errorRoute = $request->attributes->get('_route');
 
@@ -154,6 +156,8 @@ class InquiryController extends StorefrontController
      */
     public function confirmPage(Request $request, SalesChannelContext $context): Response
     {
+        $context->addState('inquiry');
+
         if (!$context->getCustomer()) {
             return $this->redirectToRoute('frontend.inquiry.register.page');
         }

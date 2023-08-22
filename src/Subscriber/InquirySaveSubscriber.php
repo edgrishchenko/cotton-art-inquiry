@@ -6,7 +6,6 @@ use Pix\Inquiry\Service\InquiryPayment;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\Checkout\Cart\Order\CartConvertedEvent;
@@ -55,5 +54,4 @@ class InquirySaveSubscriber implements EventSubscriberInterface
         $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', InquiryPayment::class));
         return $this->paymentMethodRepository->searchIds($criteria, $context->getContext())->firstId();
     }
-
 }

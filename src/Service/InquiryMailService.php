@@ -18,10 +18,9 @@ class InquiryMailService extends AbstractMailService
 
     public function __construct(
         private readonly AbstractMailService $mailService,
-        private readonly EntityRepository    $mailTemplateRepository,
+        private readonly EntityRepository $mailTemplateRepository,
         private readonly SystemConfigService $systemConfigService
-    )
-    {
+    ) {
     }
 
     public function getDecorated(): AbstractMailService

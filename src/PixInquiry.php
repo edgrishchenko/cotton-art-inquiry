@@ -3,6 +3,7 @@
 namespace Pix\Inquiry;
 
 use Shopware\Core\Checkout\Order\OrderDefinition;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -14,16 +15,21 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Pix\Inquiry\Service\InquiryPayment;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
+use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
+
 
 class PixInquiry extends Plugin
 {
     public const CUSTOM_FIELD_SET_ID = '99651ebfc1584250b5faf5f08bbb3ea8';
+    public const SHIPPING_METHOD_ID = '018a1757317572c7b662cbd50606e053';
 
     public function install(InstallContext $installContext): void
     {
         $this->addPaymentMethod($installContext->getContext());
         $this->addCustomFields($installContext->getContext());
+        $this->addShippingMethod($installContext->getContext());
     }
 
     public function uninstall(UninstallContext $uninstallContext): void
@@ -101,6 +107,107 @@ class PixInquiry extends Plugin
         $customFieldSetRepository = $this->container->get('custom_field_set.repository');
 
         return ($customFieldSetRepository->search(new Criteria([self::CUSTOM_FIELD_SET_ID]), $context)->getTotal() > 0);
+    }
+
+    private function addShippingMethod(Context $context): void
+    {
+        if ($this->shippingMethodExists($context)) {
+            return;
+        }
+
+        $shippingMethodRepository = $this->container->get('shipping_method.repository');
+
+        $data = [
+            'id' => self::SHIPPING_METHOD_ID,
+            'active' => true,
+            'availabilityRuleId' => $this->getAvailabilityRuleId($context),
+            'deliveryTimeId' => $this->getDeliveryTimeId($context),
+            'name' => 'Anfrage',
+            'prices' => [
+                [
+                    'name' => 'anfrage',
+                    'price' => '0',
+                    'currencyId' => Defaults::CURRENCY,
+                    'calculation' => 1,
+                    'quantityStart' => 1,
+                    'currencyPrice' => [
+                        [
+                            'currencyId' => Defaults::CURRENCY,
+                            'net' => 0,
+                            'gross' => 0,
+                            'linked' => false,
+                        ],
+                    ],
+                ],
+            ],
+            'translations' => [
+                'de-DE' => [
+                    'name' => 'Anfrage'
+                ],
+                'en-GB' => [
+                    'name' => 'Inquiry'
+                ],
+            ],
+        ];
+
+        $shippingMethodRepository->create([$data], Context::createDefaultContext());
+    }
+
+    private function getAvailabilityRuleId(Context $context): ?string
+    {
+        $ruleRepository = $this->container->get('rule.repository');
+
+        $ruleCriteria = new Criteria();
+        $ruleCriteria->addFilter(new EqualsFilter('name', 'Always valid (Default)'));
+        $id = $ruleRepository->searchIds($ruleCriteria, $context)->firstId();
+        if ($id !== null) {
+            return $id;
+        }
+
+        $ruleCriteria = new Criteria();
+        $ruleCriteria->setLimit(1);
+
+        return $ruleRepository->searchIds($ruleCriteria, $context)->firstId();
+    }
+
+    private function getDeliveryTimeId(Context $context): ?string
+    {
+        $deliveryTimeRepository = $this->container->get('delivery_time.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('min', 0));
+        $criteria->addFilter(new EqualsFilter('max', 0));
+        $criteria->addFilter(new EqualsFilter('unit', DeliveryTimeEntity::DELIVERY_TIME_DAY));
+        /** @var DeliveryTimeEntity|null $first */
+        $first = $deliveryTimeRepository->search($criteria, $context)->first();
+
+        if ($first !== null) {
+            return $first->getId();
+        }
+
+        $deliveryTimeRepository->create([[
+            'min' => 0,
+            'max' => 0,
+            'unit' => DeliveryTimeEntity::DELIVERY_TIME_DAY,
+            'name' => 'Immediately',
+            'translations' => [
+                'de-DE' => [
+                    'name' => 'Sofort',
+                ],
+                'en-GB' => [
+                    'name' => 'Immediately',
+                ],
+            ],
+        ]], $context);
+
+        return $deliveryTimeRepository->searchIds($criteria, $context)->firstId();
+    }
+
+    private function shippingMethodExists(Context $context): bool
+    {
+        $customFieldSetRepository = $this->container->get('shipping_method.repository');
+
+        return ($customFieldSetRepository->search(new Criteria([self::SHIPPING_METHOD_ID]), $context)->getTotal() > 0);
     }
 
     private function addPaymentMethod(Context $context): void

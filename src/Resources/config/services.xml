@@ -31,6 +31,15 @@
             <tag name="shopware.payment.method.sync" />
         </service>
 
+        <service id="Pix\Inquiry\Service\InquiryShipping">
+            <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Shipping\SalesChannel\SortedShippingMethodRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartCalculator"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
+        </service>
+
         <service id="Pix\Inquiry\Subscriber\InquirySaveSubscriber">
             <argument type="service" id="request_stack"/>
             <argument type="service" id="payment_method.repository"/>
@@ -39,13 +48,24 @@
 
         <service id="Pix\Inquiry\Subscriber\InquiryConfirmSubscriber">
             <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="Pix\Inquiry\Service\InquiryShipping"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Pix\Inquiry\Subscriber\InquiryRegisterSubscriber">
+            <argument type="service" id="Pix\Inquiry\Service\InquiryShipping"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Pix\Inquiry\Subscriber\OrderServiceSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="Pix\Inquiry\Service\InquiryMailService" decorates="Shopware\Core\Content\Mail\Service\MailService">
-                <argument type="service" id="Pix\Inquiry\Service\InquiryMailService.inner" />
-                <argument type="service" id="mail_template.repository"/>
-                <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Pix\Inquiry\Service\InquiryMailService.inner" />
+            <argument type="service" id="mail_template.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <service id="Pix\Inquiry\Service\FileUploader">
