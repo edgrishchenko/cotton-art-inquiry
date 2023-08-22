@@ -22,6 +22,6 @@ class InquiryRegisterSubscriber implements EventSubscriberInterface
 
     public function onRegisterPageLoaded(CheckoutRegisterPageLoadedEvent $event): void
     {
-        $this->inquiryShipping->updateCartShipping($event->getSalesChannelContext()->getToken(), $event->getSalesChannelContext());
+        $event->getPage()->setCart($this->inquiryShipping->updateCartShipping($event->getSalesChannelContext()->getToken(), $event->getSalesChannelContext()));
     }
 }

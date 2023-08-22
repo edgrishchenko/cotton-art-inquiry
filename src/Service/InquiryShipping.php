@@ -4,6 +4,7 @@ namespace Pix\Inquiry\Service;
 
 use Pix\Inquiry\PixInquiry;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
@@ -27,7 +28,7 @@ class InquiryShipping
     ) {
     }
 
-    public function updateCartShipping(string $token, SalesChannelContext $originalContext): void {
+    public function updateCartShipping(string $token, SalesChannelContext $originalContext): Cart {
         $originalCart = $this->cartService->getCart($token, $originalContext);
 
         $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
@@ -53,6 +54,8 @@ class InquiryShipping
 
         $this->cartPersister->save($newCart, $updatedContext);
         $this->updateSalesChannelContext($updatedContext);
+
+        return $newCart;
     }
 
     public function updateSalesChannelContext(SalesChannelContext $salesChannelContext): void

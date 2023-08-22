@@ -32,8 +32,7 @@ class InquiryConfirmSubscriber implements EventSubscriberInterface
     {
         $event->getPage()->getPaymentMethods()->remove($this->getInquiryPaymentMethodId($event->getSalesChannelContext()));
         $event->getPage()->getShippingMethods()->remove($this->getInquiryShippingMethodId($event->getSalesChannelContext()));
-
-        $this->inquiryShipping->updateCartShipping($event->getSalesChannelContext()->getToken(), $event->getSalesChannelContext());
+        $event->getPage()->setCart($this->inquiryShipping->updateCartShipping($event->getSalesChannelContext()->getToken(), $event->getSalesChannelContext()));
     }
 
     private function getInquiryPaymentMethodId(SalesChannelContext $context): string
