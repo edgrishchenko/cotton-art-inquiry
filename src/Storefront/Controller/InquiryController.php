@@ -203,6 +203,7 @@ class InquiryController extends StorefrontController
         try {
             $this->addAffiliateTracking($data, $request->getSession());
 
+            $request->request->set('inquirySaved', true);
             $context->addState('inquiry-saved');
 
             $inquiryUploadFiles = $request->files->get('inquiryUploadFile');

@@ -10,6 +10,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mime\Email;
 
 class InquiryMailService extends AbstractMailService
@@ -19,7 +20,8 @@ class InquiryMailService extends AbstractMailService
     public function __construct(
         private readonly AbstractMailService $mailService,
         private readonly EntityRepository $mailTemplateRepository,
-        private readonly SystemConfigService $systemConfigService
+        private readonly SystemConfigService $systemConfigService,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -30,7 +32,7 @@ class InquiryMailService extends AbstractMailService
 
     public function send(array $data, Context $context, array $templateData = []): ?Email
     {
-        if (in_array('inquiry-saved', $context->getStates())) {
+        if ($this->requestStack->getCurrentRequest()->request->get('inquirySaved')) {
             $inquiryMailTemplate = $this->getMailTemplate($context);
             $orderData = $templateData['order'];
 
