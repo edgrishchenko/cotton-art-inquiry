@@ -10,7 +10,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LogoutRoute"/>
             <argument type="service" id="Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader"/>
             <argument type="service" id="Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoader"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoader"/>
+            <argument type="service" id="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
@@ -24,6 +24,12 @@
             <call method="setTwig">
                 <argument type="service" id="twig"/>
             </call>
+        </service>
+
+        <service id="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader" class="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader">
+            <argument type="service" id="debug.event_dispatcher"/>
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderRoute"/>
         </service>
 
         <service id="Pix\Inquiry\Service\InquiryPayment">

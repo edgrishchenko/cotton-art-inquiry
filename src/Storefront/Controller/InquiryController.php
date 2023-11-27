@@ -36,16 +36,15 @@ use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedHook;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoader;
-use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedHook;
-use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoader;
+use Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedHook;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -61,7 +60,7 @@ class InquiryController extends StorefrontController
         private readonly AbstractLogoutRoute $logoutRoute,
         private readonly CheckoutRegisterPageLoader $registerPageLoader,
         private readonly CheckoutConfirmPageLoader $confirmPageLoader,
-        private readonly CheckoutFinishPageLoader $finishPageLoader,
+        private readonly InquiryFinishPageLoader $finishPageLoader,
         private readonly CartService $cartService,
         private readonly OrderService $orderService,
         private readonly PaymentService $paymentService,
@@ -259,8 +258,6 @@ class InquiryController extends StorefrontController
         }
 
         $page = $this->finishPageLoader->load($request, $context);
-
-        $this->hook(new CheckoutFinishPageLoadedHook($page, $context));
 
         if ($page->isPaymentFailed() === true) {
             return $this->redirectToRoute(
