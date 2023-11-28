@@ -9,7 +9,6 @@
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LogoutRoute"/>
             <argument type="service" id="Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoader"/>
             <argument type="service" id="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
@@ -61,10 +60,6 @@
 
         <service id="Pix\Inquiry\Subscriber\InquiryRegisterSubscriber">
             <argument type="service" id="Pix\Inquiry\Service\InquiryShipping"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="Pix\Inquiry\Subscriber\OrderServiceSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
 

@@ -1,0 +1,84 @@
+{% sw_extends '@Storefront/storefront/page/checkout/_page.html.twig' %}
+
+{% block base_header %}
+    {% sw_include '@Storefront/storefront/layout/header/header-minimal.html.twig' %}
+{% endblock %}
+
+{% block base_navigation %}{% endblock %}
+
+{% block page_checkout_main_content %}
+    {% block page_checkout_address %}
+        {% block page_checkout_address_header %}
+            <h1 class="address-main-header">
+                {{ "checkout.addressHeader"|trans|sw_sanitize }}
+            </h1>
+        {% endblock %}
+        {% block page_checkout_inquiry_upload_file %}
+            <div class="confirm-inquiry-upload-file">
+                <div class="card checkout-card">
+                    <div class="card-body">
+                        {% block page_checkout_inquiry_upload_file_header %}
+                            <div class="card-title">
+                                {{ "inquiry.inquiryUploadFileHeader"|trans|sw_sanitize }}
+                            </div>
+                        {% endblock %}
+
+                        {% block page_checkout_inquiry_upload_file_control %}
+                            <div class="form-input">
+                                <label>
+                                    <input type="file"
+                                           id="inquiryUploadFile"
+                                           form="inquiryRegister"
+                                           name="inquiryUploadFile[]"
+                                           multiple="multiple"
+                                           {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
+                                    />
+                                </label>
+                            </div>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+        {% block page_checkout_address_register %}
+            {% block page_checkout_address_register_card %}
+                {% sw_include '@PixInquiry/storefront/page/inquiry/address/register.html.twig' with {
+                    'cardTitle': "checkout.addressRegisterCardTitle"|trans|sw_sanitize
+                } %}
+            {% endblock %}
+        {% endblock %}
+    {% endblock %}
+{% endblock %}
+
+{% block page_checkout_aside_summary %}
+    {{ parent() }}
+
+    {% block page_checkout_address_products %}
+        <div class="checkout-aside-products">
+            {% block page_checkout_address_products_header %}
+                <h2 class="checkout-aside-product-header">
+                    {{ "checkout.cartHeader"|trans|sw_sanitize }}
+                </h2>
+            {% endblock %}
+
+            {% block page_checkout_address_products_list %}
+                <div class="checkout-aside-product-list">
+                    {% block page_checkout_address_product_list_container %}
+                        {% for lineItem in page.cart.lineItems %}
+                            {% block page_checkout_address_product_summary_item %}
+                                {% sw_include '@Storefront/storefront/component/line-item/line-item.html.twig' with {
+                                    displayMode: 'offcanvas',
+                                    showQuantitySelect: false
+                                } %}
+                            {% endblock %}
+                        {% endfor %}
+                    {% endblock %}
+                </div>
+            {% endblock %}
+        </div>
+    {% endblock %}
+{% endblock %}
+
+{% block base_footer %}
+    {% sw_include '@Storefront/storefront/layout/footer/footer-minimal.html.twig' %}
+{% endblock %}
