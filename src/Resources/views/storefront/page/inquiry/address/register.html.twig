@@ -10,13 +10,19 @@
             {% endblock %}
 
             {% block component_account_register_form %}
-                <form action="{{ path('frontend.inquiry.save') }}"
-                      class="register-form"
-                      id="inquiryRegister"
-                      method="post"
-                      data-form-submit-loader="true"
-                      data-form-validation="true"
-                      enctype="multipart/form-data">
+                <form
+                        {% if isCustomerLoggedIn %}
+                            action="{{ path('frontend.inquiry.save') }}"
+                        {% else %}
+                            action="{{ path('frontend.inquiry.register.save') }}"
+                        {% endif %}
+                        class="register-form"
+                        id="inquiryRegister"
+                        method="post"
+                        data-form-submit-loader="true"
+                        data-form-validation="true"
+                        enctype="multipart/form-data">
+
                     {% if isCustomerLoggedIn %}
                         {% block page_checkout_confirm_address %}
                             <div class="confirm-address">
@@ -24,6 +30,11 @@
                             </div>
                         {% endblock %}
                     {% else %}
+                        {% block component_account_register_redirect %}
+                            <input type="hidden"
+                                   name="redirectTo"
+                                   value="{{ redirectTo }}">
+                        {% endblock %}
                         {% block component_account_register_personal %}
                             <div class="register-personal">
                                 {% block component_account_register_personal_fields %}

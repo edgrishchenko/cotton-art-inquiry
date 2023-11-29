@@ -20,13 +20,18 @@ use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundExcepti
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\Profiling\Profiler;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Checkout\Cart\Error\PaymentMethodChangedError;
@@ -61,7 +66,7 @@ class InquiryController extends StorefrontController
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
-        private readonly SystemConfigService $systemConfigService,
+        private readonly SystemConfigService $systemConfigService
     ) {
     }
 
@@ -74,6 +79,9 @@ class InquiryController extends StorefrontController
 
         $isCustomerLoggedIn = (bool)$context->getCustomer();
         $allowedMimeTypes = $this->systemConfigService->get('PixInquiry.config.allowedMimeTypes', $context->getSalesChannel()->getId());
+
+        $redirect = $request->get('redirectTo', 'frontend.inquiry.save');
+        $errorRoute = $request->attributes->get('_route');
 
         if ($this->cartService->getCart($context->getToken(), $context)->getLineItems()->count() === 0) {
             return $this->redirectToRoute('frontend.checkout.cart.page');
@@ -90,64 +98,70 @@ class InquiryController extends StorefrontController
 
             // To prevent redirect loops add the identifier that the request already got redirected from the same origin
             return $this->redirectToRoute(
-                'frontend.inquiry.confirm.page',
+                'frontend.inquiry.register.page',
                 [...$request->query->all(), ...[self::REDIRECTED_FROM_SAME_ROUTE => true]],
             );
         }
 
         return $this->renderStorefront(
             '@PixInquiry/storefront/page/inquiry/address/index.html.twig',
-            ['page' => $page, 'data' => $data, 'isInquiry' => true, 'isCustomerLoggedIn' => $isCustomerLoggedIn, 'allowedMimeTypes' => $allowedMimeTypes]
+            ['redirectTo' => $redirect, 'errorRoute' => $errorRoute, 'page' => $page, 'data' => $data, 'isInquiry' => true, 'isCustomerLoggedIn' => $isCustomerLoggedIn, 'allowedMimeTypes' => $allowedMimeTypes]
         );
     }
 
     /**
-     * @Route("/inquiry/save", name="frontend.inquiry.save", options={"seo"=false}, methods={"POST"})
+     * @Route("/inquiry/register", name="frontend.inquiry.register.save", defaults={"_captcha"=true}, methods={"POST"})
+     */
+    public function register(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
+    {
+        try {
+            if (!$data->has('differentShippingAddress')) {
+                $data->remove('shippingAddress');
+            }
+
+            $data->set('storefrontUrl', $this->getConfirmUrl($context, $request));
+
+            if ($data->getBoolean('createCustomerAccount')) {
+                $data->set('guest', false);
+            } else {
+                $data->set('guest', true);
+            }
+
+            $this->registerRoute->register(
+                $data->toRequestDataBag(),
+                $context,
+                false,
+                $this->getAdditionalRegisterValidationDefinitions($data, $context)
+            );
+        } catch (ConstraintViolationException $formViolations) {
+            if (!$request->request->has('errorRoute')) {
+                throw RoutingException::missingRequestParameter('errorRoute');
+            }
+
+            if (empty($request->request->get('errorRoute'))) {
+                $request->request->set('errorRoute', 'frontend.account.register.page');
+            }
+
+            $params = $this->decodeParam($request, 'errorParameters');
+
+            // this is to show the correct form because we have different usecases (account/register||checkout/register)
+            return $this->forwardToRoute($request->get('errorRoute'), ['formViolations' => $formViolations], $params);
+        }
+
+        return $this->forwardToRoute($request->get('redirectTo'));
+    }
+
+    /**
+     * @Route("/inquiry/save", name="frontend.inquiry.save", options={"seo"=false})
      */
     public function inquirySave(RequestDataBag $data, SalesChannelContext $context, Request $request): Response
     {
-        if (!$context->getCustomer()) {
-            try {
-                if (!$data->has('differentShippingAddress')) {
-                    $data->remove('shippingAddress');
-                }
-
-                $data->set('storefrontUrl', $this->getConfirmUrl($context, $request));
-
-                if ($data->getBoolean('createCustomerAccount')) {
-                    $data->set('guest', false);
-                } else {
-                    $data->set('guest', true);
-                }
-
-                $this->registerRoute->register(
-                    $data->toRequestDataBag(),
-                    $context,
-                    false,
-                    $this->getAdditionalRegisterValidationDefinitions($data, $context)
-                );
-            } catch (ConstraintViolationException $formViolations) {
-                if (!$request->request->has('errorRoute')) {
-                    throw RoutingException::missingRequestParameter('errorRoute');
-                }
-
-                if (empty($request->request->get('errorRoute'))) {
-                    $request->request->set('errorRoute', 'frontend.account.register.page');
-                }
-
-                $params = $this->decodeParam($request, 'errorParameters');
-
-                // this is to show the correct form because we have different usecases (account/register||checkout/register)
-                return $this->forwardToRoute($request->get('errorRoute'), ['formViolations' => $formViolations], $params);
-            }
-        }
-
         try {
             $request->request->set('inquirySaved', true);
             $context->addState('inquiry-saved');
 
             $inquiryUploadFiles = $request->files->get('inquiryUploadFile');
-            if (count($inquiryUploadFiles) > 0) {
+            if ($inquiryUploadFiles && count($inquiryUploadFiles) > 0) {
                 $storefrontUrl = $this->getConfirmUrl($context, $request);
                 $uploadedFiles = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload($inquiryUploadFiles, $context));
                 $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
@@ -185,7 +199,7 @@ class InquiryController extends StorefrontController
 
             return $response ?? new RedirectResponse($finishUrl);
         } catch (PaymentProcessException|InvalidOrderException|UnknownPaymentMethodException) {
-            return $this->forwardToRoute('frontend.checkout.finish.page', ['orderId' => $orderId, 'changedPayment' => false, 'paymentFailed' => true]);
+            return $this->forwardToRoute('frontend.inquiry.finish.page', ['orderId' => $orderId, 'changedPayment' => false, 'paymentFailed' => true]);
         }
     }
 

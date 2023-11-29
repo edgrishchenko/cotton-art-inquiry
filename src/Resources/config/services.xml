@@ -54,7 +54,6 @@
         <service id="Pix\Inquiry\Subscriber\InquiryConfirmSubscriber">
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="shipping_method.repository"/>
-            <argument type="service" id="Pix\Inquiry\Service\InquiryShipping"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

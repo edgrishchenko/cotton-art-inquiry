@@ -21,7 +21,7 @@ class InquiryMailService extends AbstractMailService
         private readonly AbstractMailService $mailService,
         private readonly EntityRepository $mailTemplateRepository,
         private readonly SystemConfigService $systemConfigService,
-        private readonly RequestStack $requestStack,
+        private readonly RequestStack $requestStack
     ) {
     }
 
