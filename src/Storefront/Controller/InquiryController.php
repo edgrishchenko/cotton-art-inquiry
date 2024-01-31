@@ -2,6 +2,7 @@
 
 namespace Pix\Inquiry\Storefront\Controller;
 
+use Pix\Inquiry\PixInquiry;
 use Pix\Inquiry\Service\FileUploader;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
@@ -51,6 +52,7 @@ class InquiryController extends StorefrontController
     private const REDIRECTED_FROM_SAME_ROUTE = 'redirected';
 
     public function __construct(
+        private readonly EntityRepository $shippingMethodRepository,
         private readonly AbstractRegisterRoute $registerRoute,
         private readonly AbstractLogoutRoute $logoutRoute,
         private readonly CheckoutRegisterPageLoader $registerPageLoader,
@@ -104,7 +106,7 @@ class InquiryController extends StorefrontController
     }
 
     /**
-     * @Route("/inquiry/register", name="frontend.inquiry.register.save", defaults={"_captcha"=true}, methods={"POST"})
+     * @Route("/inquiry/register/save", name="frontend.inquiry.register.save", defaults={"_captcha"=true}, methods={"POST"})
      */
     public function register(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
@@ -160,6 +162,12 @@ class InquiryController extends StorefrontController
                 $uploadedFiles = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload($inquiryUploadFiles, $context));
                 $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
             }
+
+            $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
+            $shippingMethod = $this->shippingMethodRepository->search($criteria, $context->getContext())->first();
+            $context->assign([
+                'shippingMethod' => $shippingMethod,
+            ]);
 
             $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder(new RequestDataBag(['tos' => 'on']), $context));
         } catch (ConstraintViolationException $formViolations) {

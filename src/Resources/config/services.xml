@@ -6,6 +6,7 @@
 
     <services>
         <service id="Pix\Inquiry\Storefront\Controller\InquiryController" public="true">
+            <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LogoutRoute"/>
             <argument type="service" id="Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader"/>
@@ -26,7 +27,7 @@
         </service>
 
         <service id="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader" class="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader">
-            <argument type="service" id="debug.event_dispatcher"/>
+            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderRoute"/>
         </service>
@@ -38,9 +39,7 @@
 
         <service id="Pix\Inquiry\Service\InquiryShipping">
             <argument type="service" id="shipping_method.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Shipping\SalesChannel\SortedShippingMethodRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartCalculator"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
         </service>
@@ -54,7 +53,6 @@
         <service id="Pix\Inquiry\Subscriber\InquiryConfirmSubscriber">
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="shipping_method.repository"/>
-            <argument type="service" id="Pix\Inquiry\Service\InquiryShipping"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

@@ -80,6 +80,17 @@ class PixInquiry extends Plugin
                             'customFieldPosition' => 1,
                         ],
                     ],
+                    [
+                        'name' => 'custom_pixinquiry_comment',
+                        'type' => CustomFieldTypes::TEXT,
+                        'config' => [
+                            'label' => [
+                                'en-GB' => 'Comment',
+                                'de-DE' => 'Kommentar',
+                            ],
+                            'customFieldPosition' => 2,
+                        ],
+                    ],
                 ],
                 'relations' => [
                     [

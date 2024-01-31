@@ -6,6 +6,8 @@
     "finishHeader": "Thank you for your inquiry with %shop%!",
     "finishInfoOrdernumber": "Your inquiry number: #",
     "finishInfoConfirmationMail": "Inquiry confirmation email has been sent.",
-    "inquiryUploadFileHeader": "Upload file(s)"
+    "inquiryUploadFileHeader": "Upload file(s)",
+    "inquiryCommentHeader": "Comment",
+    "sendInquiryRequest": "Send request"
   }
 }

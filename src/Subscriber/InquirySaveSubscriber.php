@@ -38,9 +38,14 @@ class InquirySaveSubscriber implements EventSubscriberInterface
             $orderCustomFields = $orderData['customFields'] ?? [];
 
             $customInquiryFile = $this->requestStack->getCurrentRequest()->request->get('inquiryUploadedFiles');
+            $customInquiryComment = $this->requestStack->getCurrentRequest()->request->get('inquiryComment');
 
             if ($customInquiryFile) {
                 $orderCustomFields['custom_pixinquiry_file'] = $customInquiryFile;
+            }
+
+            if ($customInquiryComment) {
+                $orderCustomFields['custom_pixinquiry_comment'] = $customInquiryComment;
             }
 
             $orderData['customFields'] = $orderCustomFields;

@@ -7,64 +7,38 @@ use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\SalesChannel\AbstractContextSwitchRoute;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\Request;
 
 class InquiryShipping
 {
     public function __construct (
         private readonly EntityRepository $shippingMethodRepository,
-        private readonly AbstractShippingMethodRoute $shippingMethodRoute,
         private readonly CartService $cartService,
-        private readonly AbstractContextSwitchRoute $contextSwitchRoute,
         private readonly CartCalculator $calculator,
         private readonly AbstractCartPersister $cartPersister
     ) {
     }
 
-    public function updateCartShipping(string $token, SalesChannelContext $originalContext): Cart {
-        $originalCart = $this->cartService->getCart($token, $originalContext);
+    public function updateCartShipping(string $token, SalesChannelContext $context): Cart {
+        $originalCart = $this->cartService->getCart($token, $context);
 
-        $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
-        $shippingMethod = $this->shippingMethodRepository->search($criteria, $originalContext->getContext())->first();
+        if (in_array('inquiry', $context->getStates())) {
+            $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
+            $shippingMethod = $this->shippingMethodRepository->search($criteria, $context->getContext())->first();
 
-        if (!in_array('inquiry', $originalContext->getStates())) {
-            $request = new Request(['onlyAvailable' => true]);
-            $defaultShippingMethod = $this->shippingMethodRoute->load(
-                $request,
-                $originalContext,
-                new Criteria([$originalContext->getSalesChannel()->getShippingMethodId()])
-            )->getShippingMethods()->first();
+            $context->assign([
+                'shippingMethod' => $shippingMethod,
+            ]);
 
-            $shippingMethod = $defaultShippingMethod;
+            $newCart = $this->calculator->calculate($originalCart, $context);
+
+            $this->cartPersister->save($newCart, $context);
+
+            return $newCart;
         }
 
-        $updatedContext = clone $originalContext;
-        $updatedContext->assign([
-            'shippingMethod' => $shippingMethod,
-        ]);
-
-        $newCart = $this->calculator->calculate($originalCart, $updatedContext);
-
-        $this->cartPersister->save($newCart, $updatedContext);
-        $this->updateSalesChannelContext($updatedContext);
-
-        return $newCart;
-    }
-
-    public function updateSalesChannelContext(SalesChannelContext $salesChannelContext): void
-    {
-        $this->contextSwitchRoute->switchContext(
-            new RequestDataBag([
-                SalesChannelContextService::SHIPPING_METHOD_ID => $salesChannelContext->getShippingMethod()->getId(),
-            ]),
-            $salesChannelContext
-        );
+        return $originalCart;
     }
 }

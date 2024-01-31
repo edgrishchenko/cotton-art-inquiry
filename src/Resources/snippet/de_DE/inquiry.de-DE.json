@@ -6,6 +6,8 @@
     "finishHeader": "Vielen Dank für Ihre Anfrage bei %shop%!",
     "finishInfoOrdernumber": "Ihre Anfragenummer: #",
     "finishInfoConfirmationMail": "Die Bestätigungs-E-Mail für die Anfrage wurde gesendet.",
-    "inquiryUploadFileHeader": "Datei(en) hochladen"
+    "inquiryUploadFileHeader": "Datei(en) hochladen",
+    "inquiryCommentHeader": "Kommentar",
+    "sendInquiryRequest": "Anfrage Senden"
   }
 }

@@ -40,6 +40,28 @@
                 </div>
             </div>
         {% endblock %}
+        {% block page_checkout_inquiry_comment %}
+            <div class="confirm-inquiry-comment">
+                <div class="card checkout-card">
+                    <div class="card-body">
+                        {% block page_checkout_inquiry_comment_header %}
+                            <div class="card-title">
+                                {{ "inquiry.inquiryCommentHeader"|trans|sw_sanitize }}
+                            </div>
+                        {% endblock %}
+
+                        {% block page_checkout_inquiry_comment_control %}
+                            <div class="form-group">
+                                <label class="form-label sr-only visually-hidden" for="inquiryComment">
+                                    {{ "customFields.custom_pixinquiry_comment"|trans|sw_sanitize }}
+                                </label>
+                                <textarea class="form-control" name="inquiryComment" id="inquiryComment" rows="5" form="inquiryRegister"></textarea>
+                            </div>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
         {% block page_checkout_address_register %}
             {% block page_checkout_address_register_card %}
                 {% sw_include '@PixInquiry/storefront/page/inquiry/address/register.html.twig' with {
