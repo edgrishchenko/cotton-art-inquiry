@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Subscriber;
+namespace CottonArt\Inquiry\Subscriber;
 
-use Pix\Inquiry\PixInquiry;
-use Pix\Inquiry\Service\InquiryPayment;
+use CottonArt\Inquiry\CottonArtInquiry;
+use CottonArt\Inquiry\Service\InquiryPayment;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -40,7 +40,7 @@ class InquiryConfirmSubscriber implements EventSubscriberInterface
 
     private function getInquiryShippingMethodId(SalesChannelContext $context): string
     {
-        $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
+        $criteria = new Criteria([CottonArtInquiry::SHIPPING_METHOD_ID]);
         return $this->shippingMethodRepository->searchIds($criteria, $context->getContext())->firstId();
     }
 }

@@ -5,17 +5,17 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Pix\Inquiry\Storefront\Controller\InquiryController" public="true">
+        <service id="CottonArt\Inquiry\Storefront\Controller\InquiryController" public="true">
             <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LogoutRoute"/>
             <argument type="service" id="Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader"/>
-            <argument type="service" id="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader"/>
+            <argument type="service" id="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
             <argument type="service" id="sales_channel_domain.repository"/>
-            <argument type="service" id="Pix\Inquiry\Service\FileUploader"/>
+            <argument type="service" id="CottonArt\Inquiry\Service\FileUploader"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
 
             <call method="setContainer">
@@ -26,56 +26,56 @@
             </call>
         </service>
 
-        <service id="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader" class="Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader">
+        <service id="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader" class="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader">
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderRoute"/>
         </service>
 
-        <service id="Pix\Inquiry\Service\InquiryPayment">
+        <service id="CottonArt\Inquiry\Service\InquiryPayment">
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <tag name="shopware.payment.method.sync" />
         </service>
 
-        <service id="Pix\Inquiry\Service\InquiryShipping">
+        <service id="CottonArt\Inquiry\Service\InquiryShipping">
             <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartCalculator"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
         </service>
 
-        <service id="Pix\Inquiry\Subscriber\InquirySaveSubscriber">
+        <service id="CottonArt\Inquiry\Subscriber\InquirySaveSubscriber">
             <argument type="service" id="request_stack"/>
             <argument type="service" id="payment_method.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Pix\Inquiry\Subscriber\InquiryConfirmSubscriber">
+        <service id="CottonArt\Inquiry\Subscriber\InquiryConfirmSubscriber">
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="shipping_method.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Pix\Inquiry\Subscriber\InquiryRegisterSubscriber">
-            <argument type="service" id="Pix\Inquiry\Service\InquiryShipping"/>
+        <service id="CottonArt\Inquiry\Subscriber\InquiryRegisterSubscriber">
+            <argument type="service" id="CottonArt\Inquiry\Service\InquiryShipping"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="Pix\Inquiry\Service\InquiryMailService" decorates="Shopware\Core\Content\Mail\Service\MailService">
-            <argument type="service" id="Pix\Inquiry\Service\InquiryMailService.inner" />
+        <service id="CottonArt\Inquiry\Service\InquiryMailService" decorates="Shopware\Core\Content\Mail\Service\MailService">
+            <argument type="service" id="CottonArt\Inquiry\Service\InquiryMailService.inner" />
             <argument type="service" id="mail_template.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="request_stack"/>
         </service>
 
-        <service id="Pix\Inquiry\Service\FileUploader">
-            <argument type="string">/pixinquiry</argument>
+        <service id="CottonArt\Inquiry\Service\FileUploader">
+            <argument type="string">/cottonartinquiry</argument>
             <argument type="string">%kernel.project_dir%/public</argument>
             <argument type="service" id="validator"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
-        <service id="Pix\Inquiry\Extension\CsrfFunctionExtension">
+        <service id="CottonArt\Inquiry\Extension\CsrfFunctionExtension">
             <tag name="twig.extension"/>
         </service>
     </services>

@@ -53,7 +53,7 @@
                         {% block page_checkout_inquiry_comment_control %}
                             <div class="form-group">
                                 <label class="form-label sr-only visually-hidden" for="inquiryComment">
-                                    {{ "customFields.custom_pixinquiry_comment"|trans|sw_sanitize }}
+                                    {{ "customFields.custom_cottonartinquiry_comment"|trans|sw_sanitize }}
                                 </label>
                                 <textarea class="form-control" name="inquiryComment" id="inquiryComment" rows="5" form="inquiryRegister"></textarea>
                             </div>
@@ -64,7 +64,7 @@
         {% endblock %}
         {% block page_checkout_address_register %}
             {% block page_checkout_address_register_card %}
-                {% sw_include '@PixInquiry/storefront/page/inquiry/address/register.html.twig' with {
+                {% sw_include '@CottonArtInquiry/storefront/page/inquiry/address/register.html.twig' with {
                     'cardTitle': "checkout.addressRegisterCardTitle"|trans|sw_sanitize
                 } %}
             {% endblock %}

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Subscriber;
+namespace CottonArt\Inquiry\Subscriber;
 
-use Pix\Inquiry\Service\InquiryPayment;
+use CottonArt\Inquiry\Service\InquiryPayment;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -41,11 +41,11 @@ class InquirySaveSubscriber implements EventSubscriberInterface
             $customInquiryComment = $this->requestStack->getCurrentRequest()->request->get('inquiryComment');
 
             if ($customInquiryFile) {
-                $orderCustomFields['custom_pixinquiry_file'] = $customInquiryFile;
+                $orderCustomFields['custom_cottonartinquiry_file'] = $customInquiryFile;
             }
 
             if ($customInquiryComment) {
-                $orderCustomFields['custom_pixinquiry_comment'] = $customInquiryComment;
+                $orderCustomFields['custom_cottonartinquiry_comment'] = $customInquiryComment;
             }
 
             $orderData['customFields'] = $orderCustomFields;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Storefront\Page\Inquiry\Finish;
+namespace CottonArt\Inquiry\Storefront\Page\Inquiry\Finish;
 
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;

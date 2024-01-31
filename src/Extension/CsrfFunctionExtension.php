@@ -1,6 +1,6 @@
 <?php
 
-namespace Pix\Inquiry\Extension;
+namespace CottonArt\Inquiry\Extension;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;

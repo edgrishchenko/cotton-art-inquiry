@@ -1,15 +1,15 @@
 {
-  "name": "pix/inquiry",
+  "name": "cottonart/inquiry",
   "description": "Submit request as order",
   "version": "1.0.0",
   "type": "shopware-platform-plugin",
   "authors": [
     {
-      "name": "Pixline Media"
+      "name": "cottonART"
     }
   ],
   "extra": {
-    "shopware-plugin-class": "Pix\\Inquiry\\PixInquiry",
+    "shopware-plugin-class": "CottonArt\\Inquiry\\CottonArtInquiry",
     "label": {
       "de-DE": "Anfrage als Bestellung Absenden",
       "en-GB": "Submit request as order"
@@ -17,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Pix\\Inquiry\\": "src/"
+      "CottonArt\\Inquiry\\": "src/"
     }
   }
 }

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Storefront\Controller;
+namespace CottonArt\Inquiry\Storefront\Controller;
 
-use Pix\Inquiry\PixInquiry;
-use Pix\Inquiry\Service\FileUploader;
+use CottonArt\Inquiry\CottonArtInquiry;
+use CottonArt\Inquiry\Service\FileUploader;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -34,7 +34,7 @@ use Shopware\Storefront\Checkout\Cart\Error\PaymentMethodChangedError;
 use Shopware\Storefront\Checkout\Cart\Error\ShippingMethodChangedError;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
-use Pix\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader;
+use CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -74,7 +74,7 @@ class InquiryController extends StorefrontController
         $context->addState('inquiry');
 
         $isCustomerLoggedIn = (bool)$context->getCustomer();
-        $allowedMimeTypes = $this->systemConfigService->get('PixInquiry.config.allowedMimeTypes', $context->getSalesChannel()->getId());
+        $allowedMimeTypes = $this->systemConfigService->get('CottonArtInquiry.config.allowedMimeTypes', $context->getSalesChannel()->getId());
 
         $redirect = $request->get('redirectTo', 'frontend.inquiry.save');
         $errorRoute = $request->attributes->get('_route');
@@ -100,7 +100,7 @@ class InquiryController extends StorefrontController
         }
 
         return $this->renderStorefront(
-            '@PixInquiry/storefront/page/inquiry/address/index.html.twig',
+            '@CottonArtInquiry/storefront/page/inquiry/address/index.html.twig',
             ['redirectTo' => $redirect, 'errorRoute' => $errorRoute, 'page' => $page, 'data' => $data, 'isInquiry' => true, 'isCustomerLoggedIn' => $isCustomerLoggedIn, 'allowedMimeTypes' => $allowedMimeTypes]
         );
     }
@@ -163,7 +163,7 @@ class InquiryController extends StorefrontController
                 $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
             }
 
-            $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
+            $criteria = new Criteria([CottonArtInquiry::SHIPPING_METHOD_ID]);
             $shippingMethod = $this->shippingMethodRepository->search($criteria, $context->getContext())->first();
             $context->assign([
                 'shippingMethod' => $shippingMethod,

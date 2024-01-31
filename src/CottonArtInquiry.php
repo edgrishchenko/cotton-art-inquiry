@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry;
+namespace CottonArt\Inquiry;
 
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Defaults;
@@ -14,13 +14,11 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
-use Pix\Inquiry\Service\InquiryPayment;
-use Shopware\Core\Framework\Uuid\Uuid;
+use CottonArt\Inquiry\Service\InquiryPayment;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
 
-
-class PixInquiry extends Plugin
+class CottonArtInquiry extends Plugin
 {
     public const CUSTOM_FIELD_SET_ID = '99651ebfc1584250b5faf5f08bbb3ea8';
     public const SHIPPING_METHOD_ID = '018a1757317572c7b662cbd50606e053';
@@ -60,17 +58,17 @@ class PixInquiry extends Plugin
         $customFieldSetRepository->create([
             [
                 'id' => self::CUSTOM_FIELD_SET_ID,
-                'name' => 'custom_pixinquiry_set',
+                'name' => 'custom_cottonartinquiry_set',
                 'global' => true, // set this to true to prevent accidental editing in admin
                 'config' => [
                     'label' => [
-                        'en-GB' => 'Pix Inquiry',
-                        'de-DE' => 'Pix Anfrage',
+                        'en-GB' => 'cottonART Inquiry',
+                        'de-DE' => 'cottonART Anfrage',
                     ],
                 ],
                 'customFields' => [
                     [
-                        'name' => 'custom_pixinquiry_file',
+                        'name' => 'custom_cottonartinquiry_file',
                         'type' => CustomFieldTypes::TEXT,
                         'config' => [
                             'label' => [
@@ -81,7 +79,7 @@ class PixInquiry extends Plugin
                         ],
                     ],
                     [
-                        'name' => 'custom_pixinquiry_comment',
+                        'name' => 'custom_cottonartinquiry_comment',
                         'type' => CustomFieldTypes::TEXT,
                         'config' => [
                             'label' => [

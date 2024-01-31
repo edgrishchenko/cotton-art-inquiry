@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Service;
+namespace CottonArt\Inquiry\Service;
 
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;

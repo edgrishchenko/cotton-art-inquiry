@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Service;
+namespace CottonArt\Inquiry\Service;
 
 use GuzzleHttp\Psr7\MimeType;
 use Shopware\Core\Content\Mail\Service\AbstractMailService;
@@ -15,7 +15,7 @@ use Symfony\Component\Mime\Email;
 
 class InquiryMailService extends AbstractMailService
 {
-    private const INQUIRY_MAIL_TEMPLATE_NAME = 'pix_inquiry_mail_template';
+    private const INQUIRY_MAIL_TEMPLATE_NAME = 'cottonart_inquiry_mail_template';
 
     public function __construct(
         private readonly AbstractMailService $mailService,
@@ -41,8 +41,8 @@ class InquiryMailService extends AbstractMailService
 
             $uploadedFiles = array();
 
-            if (array_key_exists('custom_pixinquiry_file', $orderData->getCustomFields())) {
-                $uploadedFiles = explode(', ', $orderData->getCustomFields()['custom_pixinquiry_file']);
+            if (array_key_exists('custom_cottonartinquiry_file', $orderData->getCustomFields())) {
+                $uploadedFiles = explode(', ', $orderData->getCustomFields()['custom_cottonartinquiry_file']);
             }
 
             $templateData['shopName'] = $shopName;
@@ -71,7 +71,6 @@ class InquiryMailService extends AbstractMailService
 
         return $this->mailService->send($data, $context, $templateData);
     }
-
 
     private function getMailTemplate(Context $context): ?MailTemplateEntity
     {

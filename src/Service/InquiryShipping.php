@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Service;
+namespace CottonArt\Inquiry\Service;
 
-use Pix\Inquiry\PixInquiry;
+use CottonArt\Inquiry\CottonArtInquiry;
 use Shopware\Core\Checkout\Cart\AbstractCartPersister;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartCalculator;
@@ -25,7 +25,7 @@ class InquiryShipping
         $originalCart = $this->cartService->getCart($token, $context);
 
         if (in_array('inquiry', $context->getStates())) {
-            $criteria = new Criteria([PixInquiry::SHIPPING_METHOD_ID]);
+            $criteria = new Criteria([CottonArtInquiry::SHIPPING_METHOD_ID]);
             $shippingMethod = $this->shippingMethodRepository->search($criteria, $context->getContext())->first();
 
             $context->assign([

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Migration;
+namespace CottonArt\Inquiry\Migration;
 
 use DateTime;
 use Doctrine\DBAL\Connection;
@@ -61,7 +61,7 @@ class Migration1689232750AddInquiryMailTemplate extends MigrationStep
                 (:id, :technicalName, :availableEntities, :createdAt)
         ", [
             'id' => Uuid::fromHexToBytes($mailTemplateTypeId),
-            'technicalName' => 'pix_inquiry_mail_template',
+            'technicalName' => 'cottonart_inquiry_mail_template',
             'availableEntities' => json_encode(['product' => 'product']),
             'createdAt' => (new DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ]);

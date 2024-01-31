@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Service;
+namespace CottonArt\Inquiry\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -63,12 +63,12 @@ class FileUploader
 
     private function getAllowedMimeTypes(SalesChannelContext $context): string
     {
-        return $this->systemConfigService->get('PixInquiry.config.allowedMimeTypes', $context->getSalesChannelId());
+        return $this->systemConfigService->get('CottonArtInquiry.config.allowedMimeTypes', $context->getSalesChannelId());
     }
 
     private function getMaxFileSize(SalesChannelContext $context): int
     {
-        return $this->systemConfigService->get('PixInquiry.config.maxFileSize', $context->getSalesChannelId());
+        return $this->systemConfigService->get('CottonArtInquiry.config.maxFileSize', $context->getSalesChannelId());
     }
 
     public function getTargetDirectory(): string

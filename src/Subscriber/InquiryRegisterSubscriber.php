@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Pix\Inquiry\Subscriber;
+namespace CottonArt\Inquiry\Subscriber;
 
-use Pix\Inquiry\Service\InquiryShipping;
+use CottonArt\Inquiry\Service\InquiryShipping;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
