@@ -19,7 +19,7 @@ class FileUploader
     ) {
     }
 
-    public function upload(array $files, SalesChannelContext $context): array
+    public function upload(array $files, SalesChannelContext $context, string $newFilename = ''): array
     {
         $definition = [];
         if ($this->getMaxFileSize($context)) {
@@ -52,7 +52,7 @@ class FileUploader
         foreach ($files as $file) {
             $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $slugger->slug($originalFilename);
-            $fileName = $safeFilename . '.' . $file->guessExtension();
+            $fileName = ($newFilename ?: $safeFilename) . '.' . $file->guessExtension();
 
             $file->move($this->projectDir . $fileFolder, $fileName);
             $uploadedFiles[] = $fileFolder . '/' . $fileName;

@@ -13,55 +13,11 @@
                 {{ "checkout.addressHeader"|trans|sw_sanitize }}
             </h1>
         {% endblock %}
-        {% block page_checkout_inquiry_upload_file %}
-            <div class="confirm-inquiry-upload-file">
-                <div class="card checkout-card">
-                    <div class="card-body">
-                        {% block page_checkout_inquiry_upload_file_header %}
-                            <div class="card-title">
-                                {{ "inquiry.inquiryUploadFileHeader"|trans|sw_sanitize }}
-                            </div>
-                        {% endblock %}
 
-                        {% block page_checkout_inquiry_upload_file_control %}
-                            <div class="form-input">
-                                <label>
-                                    <input type="file"
-                                           id="inquiryUploadFile"
-                                           form="inquiryRegister"
-                                           name="inquiryUploadFile[]"
-                                           multiple="multiple"
-                                           {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
-                                    />
-                                </label>
-                            </div>
-                        {% endblock %}
-                    </div>
-                </div>
-            </div>
+        {% block inquiry_custom_fields %}
+            {% sw_include '@CottonArtInquiry/storefront/page/inquiry/address/custom-fields.html.twig' %}
         {% endblock %}
-        {% block page_checkout_inquiry_comment %}
-            <div class="confirm-inquiry-comment">
-                <div class="card checkout-card">
-                    <div class="card-body">
-                        {% block page_checkout_inquiry_comment_header %}
-                            <div class="card-title">
-                                {{ "inquiry.inquiryCommentHeader"|trans|sw_sanitize }}
-                            </div>
-                        {% endblock %}
 
-                        {% block page_checkout_inquiry_comment_control %}
-                            <div class="form-group">
-                                <label class="form-label sr-only visually-hidden" for="inquiryComment">
-                                    {{ "customFields.custom_cottonartinquiry_comment"|trans|sw_sanitize }}
-                                </label>
-                                <textarea class="form-control" name="inquiryComment" id="inquiryComment" rows="5" form="inquiryRegister"></textarea>
-                            </div>
-                        {% endblock %}
-                    </div>
-                </div>
-            </div>
-        {% endblock %}
         {% block page_checkout_address_register %}
             {% block page_checkout_address_register_card %}
                 {% sw_include '@CottonArtInquiry/storefront/page/inquiry/address/register.html.twig' with {

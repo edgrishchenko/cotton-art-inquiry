@@ -1,0 +1,164 @@
+{% block page_checkout_inquiry_method_type %}
+    <div class="custom-field-block confirm-inquiry-method-type">
+        {% block page_checkout_inquiry_method_type_header %}
+            <span class="checkout-mandatory-field">{{ "inquiry.inquiryOptionMandatory"|trans|sw_sanitize }}</span>
+            <div class="card-title">
+                {{ "inquiry.finishingMethodTypeHeader"|trans|sw_sanitize }}
+            </div>
+        {% endblock %}
+
+        {% block page_checkout_inquiry_method_type_control %}
+            <div class="form-method-type">
+                <label class="form-label sr-only visually-hidden" for="custom_cottonartinquiry_method_type">
+                    {{ "customFields.custom_cottonartinquiry_method_type"|trans|sw_sanitize }}
+                </label>
+                <fieldset>
+                    <ul>
+                        {% for methodType in finishingMethodOptions %}
+                            <li>
+                                <input form="inquiryRegister" type="checkbox" id="{{ methodType }}" name="custom_cottonartinquiry_method_type[]"
+                                       value="{{ methodType }}" onchange="checkboxValidation('.form-method-type');" required="required" />
+                                <label for="{{ methodType }}">{{ ("inquiry." ~ methodType ~ "Option")|trans|sw_sanitize }}</label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block page_checkout_inquiry_logo_placement %}
+    <div class="custom-field-block confirm-inquiry-logo-placement">
+        {% block page_checkout_inquiry_logo_placement_header %}
+            <span class="checkout-mandatory-field">{{ "inquiry.inquiryOptionMandatory"|trans|sw_sanitize }}</span>
+            <div class="card-title">
+                {{ "inquiry.logoPlacementHeader"|trans|sw_sanitize }}
+            </div>
+        {% endblock %}
+
+        {% block page_checkout_inquiry_logo_placement_control %}
+            <div class="form-logo-placement">
+                <label class="form-label sr-only visually-hidden" for="inquiryLogoPlacement">
+                    {{ "customFields.custom_cottonartinquiry_logo_placement"|trans|sw_sanitize }}
+                </label>
+                <fieldset>
+                    <ul>
+                        {% for logoPlacement in logoPlacementOptions %}
+                            <li>
+                                <input form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
+                                       onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});" required="required"/>
+                                <label for="{{ logoPlacement }}">{{ ("inquiry." ~ logoPlacement) |trans|sw_sanitize }}</label>
+                                <input type="file"
+                                       id="{{ logoPlacement ~ "File" }}"
+                                       form="inquiryRegister"
+                                       name="{{ logoPlacement ~ "File" }}"
+                                       {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
+                                />
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block page_checkout_inquiry_logo_color %}
+    <div class="custom-field-block confirm-inquiry-logo-color">
+        {% block page_checkout_inquiry_logo_color_header %}
+            <span class="checkout-optional-field">{{ "inquiry.inquiryOptionalField"|trans|sw_sanitize }}</span>
+            <div class="card-title">
+                {{ "inquiry.logoColorHeader"|trans|sw_sanitize }}
+                <span class="logo-color-note"> {{ "inquiry.logoColorNote"|trans|sw_sanitize }} </span>
+            </div>
+        {% endblock %}
+
+        {% block page_checkout_inquiry_logo_color_control %}
+            <div class="form-logo-color">
+                <label class="form-label sr-only visually-hidden" for="custom_cottonartinquiry_logo_color">
+                    {{ "customFields.custom_cottonartinquiry_logo_color"|trans|sw_sanitize }}
+                </label>
+                <input type="text" name="custom_cottonartinquiry_logo_color" id="inquiryLogoColor" form="inquiryRegister"
+                       maxlength="35" pattern="^[A-Za-z0-9 ]*[A-Za-z0-9][A-Za-z0-9 ]*$"/>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block page_checkout_inquiry_delivery_duration %}
+    <div class="custom-field-block confirm-inquiry-delivery-duration">
+        {% block page_checkout_inquiry_delivery_duration_header %}
+            <span class="checkout-mandatory-field">{{ "inquiry.inquiryOptionMandatory"|trans|sw_sanitize }}</span>
+        {% endblock %}
+
+        {% block page_checkout_inquiry_delivery_duration_control %}
+            <div class="form-delivery-duration">
+                <label class="form-label sr-only visually-hidden" for="custom_cottonartinquiry_delivery_duration">
+                    {{ "customFields.custom_cottonartinquiry_delivery_duration"|trans|sw_sanitize }}
+                </label>
+                <fieldset>
+                    <ul>
+                        {% for deliveryType in deliveryOptions %}
+                            <li>
+                                <input form="inquiryRegister" type="checkbox" id="{{ deliveryType }}" name="custom_cottonartinquiry_delivery_duration[]" value="{{ deliveryType }}"
+                                       onchange="checkboxValidation('.form-delivery-duration');" required="required"/>
+                                <label for="{{ deliveryType }}">{{ ("inquiry." ~ deliveryType ~ "Delivery")|trans|sw_sanitize }}</label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block page_checkout_inquiry_comment %}
+    <div class="custom-field-block confirm-inquiry-comment">
+        {% block page_checkout_inquiry_comment_header %}
+            <div class="card-title">
+                {{ "inquiry.inquiryCommentHeader"|trans|sw_sanitize }}
+            </div>
+        {% endblock %}
+        {% block page_checkout_inquiry_comment_control %}
+            <div class="form-group">
+                <label class="form-label sr-only visually-hidden" for="custom_cottonartinquiry_comment">
+                    {{ "customFields.custom_cottonartinquiry_comment"|trans|sw_sanitize }}
+                </label>
+                <textarea class="form-control" name="custom_cottonartinquiry_comment" id="inquiryComment" rows="5" form="inquiryRegister"></textarea>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+<script>
+    function checkboxValidation(parentClass, logoPlacement = '') {
+        const parentForm = document.querySelector(parentClass);
+        const checkboxes = parentForm.querySelectorAll('input[type=checkbox]');
+
+        if (parentForm.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+            checkboxes.forEach((element) => element.removeAttribute('required'));
+
+            if (parentClass === '.form-logo-placement') {
+                checkFileUpload(logoPlacement, true);
+            }
+        } else {
+            checkboxes.forEach((element) => element.setAttribute('required', 'required'));
+
+            if (parentClass === '.form-logo-placement') {
+                checkFileUpload(logoPlacement, false);
+            }
+        }
+    }
+
+    function checkFileUpload(logoPlacement, isChecked)
+    {
+        const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
+
+        if (fileInput.files.length === 0 && isChecked) {
+            fileInput.setAttribute('required', 'required');
+        } else {
+            fileInput.removeAttribute('required');
+        }
+    }
+</script>

@@ -17,6 +17,7 @@
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="CottonArt\Inquiry\Service\FileUploader"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -47,6 +48,7 @@
         <service id="CottonArt\Inquiry\Subscriber\InquirySaveSubscriber">
             <argument type="service" id="request_stack"/>
             <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -73,6 +75,10 @@
             <argument type="string">%kernel.project_dir%/public</argument>
             <argument type="service" id="validator"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement">
+            <argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         </service>
 
         <service id="CottonArt\Inquiry\Extension\CsrfFunctionExtension">

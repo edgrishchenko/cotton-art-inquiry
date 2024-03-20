@@ -6,8 +6,23 @@
     "finishHeader": "Thank you for your inquiry with %shop%!",
     "finishInfoOrdernumber": "Your inquiry number: #",
     "finishInfoConfirmationMail": "Inquiry confirmation email has been sent.",
-    "inquiryUploadFileHeader": "Upload file(s)",
+    "finishingMethodTypeHeader": "Please select the finishing method:",
+    "inquiryOptionMandatory": "(One option is mandatory)",
     "inquiryCommentHeader": "Comment",
-    "sendInquiryRequest": "Send request"
+    "sendInquiryRequest": "Send request",
+    "printOption": "Print",
+    "stickOption": "Stick",
+    "inquiryOptionalField": "(Input field is optional)",
+    "logoColorHeader": "Logo colors in PANTONE numbers: ",
+    "logoColorNote": "(If the PANTONE numbers are not available, we will match the colors with a color laser printout)",
+    "expressDelivery": "I would like to receive the goods by express service within 7 working days for a surcharge.",
+    "regularDelivery": "I would like to receive the goods by regular service within 15-20 working days.",
+    "leftChest": "Left chest area (max. 11 cm)",
+    "centerChest": "Center chest (max. 26 cm)",
+    "centerBack": "Center back (max. 26 cm)",
+    "leftSleeve": "Left sleeve (max. 7.5 cm)",
+    "leftCollar": "Left collar (max. 7.5 cm)",
+    "centerNeck": "Center neck (max. 11 cm)",
+    "logoPlacementHeader": "Please select the desired placement and upload your logo:"
   }
 }

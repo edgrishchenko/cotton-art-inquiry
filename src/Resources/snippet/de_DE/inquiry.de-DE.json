@@ -6,8 +6,23 @@
     "finishHeader": "Vielen Dank für Ihre Anfrage bei %shop%!",
     "finishInfoOrdernumber": "Ihre Anfragenummer: #",
     "finishInfoConfirmationMail": "Die Bestätigungs-E-Mail für die Anfrage wurde gesendet.",
-    "inquiryUploadFileHeader": "Datei(en) hochladen",
+    "finishingMethodTypeHeader": "Bitte wählen Sie die Veredelungsmethode:",
+    "inquiryOptionMandatory": "(Eine Option ist muss)",
     "inquiryCommentHeader": "Kommentar",
-    "sendInquiryRequest": "Anfrage Senden"
+    "sendInquiryRequest": "Anfrage Senden",
+    "printOption": "Druck",
+    "stickOption": "Stick",
+    "inquiryOptionalField": "(Eingabefeld Optional)",
+    "logoColorHeader": "Logofarben in PANTONE-Nummern: ",
+    "logoColorNote": "(Falls die PANTONE-Nummern nicht vorhanden sind, stimmen wir die Farben mit einem Farblaser-Ausdruck ab)",
+    "expressDelivery": "Ich möchte die Ware perExpress-Service gegen Aufschlag innerhalb von 7 Werktagen erhalten.",
+    "regularDelivery": "Ich möchte die Ware per requlärem Service innerhalb von 15-20 Werktagen erhalten.",
+    "leftChest": "Linke Brustpartie (max. 11 cm)",
+    "centerChest": "Am Brustmittig (max. 26 cm)",
+    "centerBack": "Am Rücken mittig (max. 26 cm)",
+    "leftSleeve": "Linker Ärmel (max. 7,5 cm)",
+    "leftCollar": "Linker Kragen (max. 7,5 cm)",
+    "centerNeck": "Am Nacken mittig (max. 11 cm)",
+    "logoPlacementHeader": "Bitte wählen Sie die gewünschte Platzierung und laden Sie Ihr Logo hoch:"
   }
 }

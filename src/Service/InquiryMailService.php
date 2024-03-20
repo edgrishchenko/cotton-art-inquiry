@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Mime\Email;
+use CottonArt\Inquiry\CottonArtInquiry;
 
 class InquiryMailService extends AbstractMailService
 {
@@ -39,10 +40,9 @@ class InquiryMailService extends AbstractMailService
             $shopOwnerEmail = $this->systemConfigService->get('core.basicInformation.email');
             $shopName = $this->systemConfigService->get('core.basicInformation.shopName');
 
-            $uploadedFiles = array();
-
-            if (array_key_exists('custom_cottonartinquiry_file', $orderData->getCustomFields())) {
-                $uploadedFiles = explode(', ', $orderData->getCustomFields()['custom_cottonartinquiry_file']);
+            $uploadedFiles = [];
+            if (array_key_exists(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT_FILE, $orderData->getCustomFields())) {
+                $uploadedFiles = json_decode($orderData->getCustomFields()[CottonArtInquiry::CUSTOM_LOGO_PLACEMENT_FILE], true);
             }
 
             $templateData['shopName'] = $shopName;
@@ -54,7 +54,7 @@ class InquiryMailService extends AbstractMailService
             $data['contentPlain'] = $inquiryMailTemplate->getContentPlain();
             $data['subject'] = $inquiryMailTemplate->getSubject();
 
-            if (count($uploadedFiles) > 0) {
+            if (count($uploadedFiles)) {
                 $binAttachments = [];
 
                 foreach ($uploadedFiles as $file) {

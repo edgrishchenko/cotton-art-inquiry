@@ -17,11 +17,30 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use CottonArt\Inquiry\Service\InquiryPayment;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
+use Shopware\Core\Framework\App\Manifest\Xml\CustomField\CustomFieldTypes\MultiSelectField;
 
 class CottonArtInquiry extends Plugin
 {
     public const CUSTOM_FIELD_SET_ID = '99651ebfc1584250b5faf5f08bbb3ea8';
     public const SHIPPING_METHOD_ID = '018a1757317572c7b662cbd50606e053';
+
+    /** @var string  */
+    public const CUSTOM_METHOD_TYPE = 'custom_cottonartinquiry_method_type';
+
+    /** @var string  */
+    public const CUSTOM_LOGO_PLACEMENT = 'custom_cottonartinquiry_logo_placement';
+
+    /** @var string  */
+    public const CUSTOM_LOGO_PLACEMENT_FILE = 'custom_cottonartinquiry_logo_placement_file';
+
+    /** @var string  */
+    public const CUSTOM_LOGO_COLOR = 'custom_cottonartinquiry_logo_color';
+
+    /** @var string  */
+    public const CUSTOM_DELIVERY_DURATION = 'custom_cottonartinquiry_delivery_duration';
+
+    /** @var string  */
+    public const CUSTOM_COMMENT = 'custom_cottonartinquiry_comment';
 
     public function install(InstallContext $installContext): void
     {
@@ -59,7 +78,7 @@ class CottonArtInquiry extends Plugin
             [
                 'id' => self::CUSTOM_FIELD_SET_ID,
                 'name' => 'custom_cottonartinquiry_set',
-                'global' => true, // set this to true to prevent accidental editing in admin
+                'global' => false, // set this to true to prevent accidental editing in admin
                 'config' => [
                     'label' => [
                         'en-GB' => 'cottonART Inquiry',
@@ -68,25 +87,151 @@ class CottonArtInquiry extends Plugin
                 ],
                 'customFields' => [
                     [
-                        'name' => 'custom_cottonartinquiry_file',
-                        'type' => CustomFieldTypes::TEXT,
+                        'name' => self::CUSTOM_METHOD_TYPE,
+                        'type' => CustomFieldTypes::SELECT,
                         'config' => [
                             'label' => [
-                                'en-GB' => 'Inquiry Uploaded File',
-                                'de-DE' => 'Anfrage hochgeladene Date',
+                                'en-GB' => 'Finishing Method Type',
+                                'de-DE' => 'Typ der Endbearbeitungsmethode',
+                            ],
+                            'componentName' => MultiSelectField::COMPONENT_NAME,
+                            'customFieldType' => 'select',
+                            'options' => [
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Print',
+                                        'de-DE' => 'Druck',
+                                    ],
+                                    'value' => 'print',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Stick',
+                                        'de-DE' => 'Stick',
+                                    ],
+                                    'value' => 'stick',
+                                ]
                             ],
                             'customFieldPosition' => 1,
                         ],
                     ],
                     [
-                        'name' => 'custom_cottonartinquiry_comment',
+                        'name' => self::CUSTOM_LOGO_PLACEMENT,
+                        'type' => CustomFieldTypes::SELECT,
+                        'config' => [
+                            'label' => [
+                                'en-GB' => 'Logo Placement',
+                                'de-DE' => 'Logo-Platzierung',
+                            ],
+                            'componentName' => MultiSelectField::COMPONENT_NAME,
+                            'customFieldType' => 'select',
+                            'options' => [
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Left chest area (max. 11 cm)',
+                                        'de-DE' => 'Linke Brustpartie (max. 11 cm)',
+                                    ],
+                                    'value' => 'leftChest',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Center chest (max. 26 cm)',
+                                        'de-DE' => 'Am Brustmittig (max. 26 cm)',
+                                    ],
+                                    'value' => 'centerChest',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Center back (max. 26 cm)',
+                                        'de-DE' => 'Am Rücken mittig (max. 26 cm)',
+                                    ],
+                                    'value' => 'centerBack',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Left sleeve (max. 7.5 cm)',
+                                        'de-DE' => 'Linker Ärmel (max. 7,5 cm)',
+                                    ],
+                                    'value' => 'leftSleeve',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Left collar (max. 7.5 cm)',
+                                        'de-DE' => 'Linker Kragen (max. 7,5 cm)',
+                                    ],
+                                    'value' => 'leftCollar',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'Center neck (max. 11 cm)',
+                                        'de-DE' => 'Am Nacken mittig (max. 11 cm)',
+                                    ],
+                                    'value' => 'centerNeck',
+                                ]
+                            ],
+                            'customFieldPosition' => 2,
+                        ],
+                    ],
+                    [
+                        'name' => self::CUSTOM_LOGO_PLACEMENT_FILE,
+                        'type' => CustomFieldTypes::TEXT,
+                        'config' => [
+                            'label' => [
+                                'en-GB' => 'Logo Placement File',
+                                'de-DE' => 'Logo-Platzierungsdatei',
+                            ],
+                            'customFieldPosition' => 3,
+                        ],
+                    ],
+                    [
+                        'name' => self::CUSTOM_LOGO_COLOR,
+                        'type' => CustomFieldTypes::TEXT,
+                        'config' => [
+                            'label' => [
+                                'en-GB' => 'Logo Color',
+                                'de-DE' => 'Logofarbe',
+                            ],
+                            'customFieldPosition' => 4,
+                        ],
+                    ],
+                    [
+                        'name' => self::CUSTOM_DELIVERY_DURATION,
+                        'type' => CustomFieldTypes::SELECT,
+                        'config' => [
+                            'label' => [
+                                'en-GB' => 'Delivery Duration',
+                                'de-DE' => 'Lieferdauer',
+                            ],
+                            'componentName' => MultiSelectField::COMPONENT_NAME,
+                            'customFieldType' => 'select',
+                            'options' => [
+                                [
+                                    'label' => [
+                                        'en-GB' => 'I would like to receive the goods by express service within 7 working days for a surcharge.',
+                                        'de-DE' => 'Ich möchte die Ware perExpress-Service gegen Aufschlag innerhalb von 7 Werktagen erhalten.',
+                                    ],
+                                    'value' => 'express',
+                                ],
+                                [
+                                    'label' => [
+                                        'en-GB' => 'I would like to receive the goods by regular service within 15-20 working days.',
+                                        'de-DE' => 'Ich möchte die Ware per requlärem Service innerhalb von 15-20 Werktagen erhalten.',
+                                    ],
+                                    'value' => 'regular',
+                                ]
+                            ],
+                            'customFieldPosition' => 5,
+                        ],
+                    ],
+                    [
+                        'name' => self::CUSTOM_COMMENT,
                         'type' => CustomFieldTypes::TEXT,
                         'config' => [
                             'label' => [
                                 'en-GB' => 'Comment',
                                 'de-DE' => 'Kommentar',
                             ],
-                            'customFieldPosition' => 2,
+                            'customFieldPosition' => 6,
                         ],
                     ],
                 ],

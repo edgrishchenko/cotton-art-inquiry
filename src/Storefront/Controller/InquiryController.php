@@ -4,6 +4,8 @@ namespace CottonArt\Inquiry\Storefront\Controller;
 
 use CottonArt\Inquiry\CottonArtInquiry;
 use CottonArt\Inquiry\Service\FileUploader;
+use CottonArt\Inquiry\Service\InquiryCustomFieldsManagement;
+use CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -34,7 +36,6 @@ use Shopware\Storefront\Checkout\Cart\Error\PaymentMethodChangedError;
 use Shopware\Storefront\Checkout\Cart\Error\ShippingMethodChangedError;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
-use CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -62,7 +63,8 @@ class InquiryController extends StorefrontController
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
-        private readonly SystemConfigService $systemConfigService
+        private readonly SystemConfigService $systemConfigService,
+        private readonly InquiryCustomFieldsManagement $customFieldsManagement
     ) {
     }
 
@@ -101,7 +103,18 @@ class InquiryController extends StorefrontController
 
         return $this->renderStorefront(
             '@CottonArtInquiry/storefront/page/inquiry/address/index.html.twig',
-            ['redirectTo' => $redirect, 'errorRoute' => $errorRoute, 'page' => $page, 'data' => $data, 'isInquiry' => true, 'isCustomerLoggedIn' => $isCustomerLoggedIn, 'allowedMimeTypes' => $allowedMimeTypes]
+            [
+                'redirectTo' => $redirect,
+                'errorRoute' => $errorRoute,
+                'page' => $page,
+                'data' => $data,
+                'isInquiry' => true,
+                'isCustomerLoggedIn' => $isCustomerLoggedIn,
+                'allowedMimeTypes' => $allowedMimeTypes,
+                'finishingMethodOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_METHOD_TYPE),
+                'logoPlacementOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT),
+                'deliveryOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_DELIVERY_DURATION)
+            ]
         );
     }
 
@@ -156,12 +169,7 @@ class InquiryController extends StorefrontController
             $request->request->set('inquirySaved', true);
             $context->addState('inquiry-saved');
 
-            $inquiryUploadFiles = $request->files->get('inquiryUploadFile');
-            if ($inquiryUploadFiles && count($inquiryUploadFiles) > 0) {
-                $storefrontUrl = $this->getConfirmUrl($context, $request);
-                $uploadedFiles = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload($inquiryUploadFiles, $context));
-                $request->request->set('inquiryUploadedFiles', implode(', ', $uploadedFiles));
-            }
+            $this->parseLogoFiles($context, $request);
 
             $criteria = new Criteria([CottonArtInquiry::SHIPPING_METHOD_ID]);
             $shippingMethod = $this->shippingMethodRepository->search($criteria, $context->getContext())->first();
@@ -301,5 +309,28 @@ class InquiryController extends StorefrontController
         }
 
         return $domain->getUrl();
+    }
+
+    private function parseLogoFiles(SalesChannelContext $context, Request $request): void
+    {
+        $logoPlacementOptions = $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT);
+        $checkedPlacements = $request->request->all(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT);
+
+        $uploadedFiles = [];
+        foreach ($logoPlacementOptions as $option) {
+            if (!($uploadedFile = $request->files->get(sprintf('%sFile', $option)))
+                || !in_array($option, $checkedPlacements)) {
+                continue;
+            }
+
+            $storefrontUrl = $this->getConfirmUrl($context, $request);
+            $uploadedFile = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload([$uploadedFile], $context, $option));
+            $uploadedFiles[$option] = $uploadedFile[0];
+        }
+
+        $request->request->set(
+            CottonArtInquiry::CUSTOM_LOGO_PLACEMENT_FILE,
+            json_encode($uploadedFiles)
+        );
     }
 }

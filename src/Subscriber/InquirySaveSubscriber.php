@@ -1,21 +1,26 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace CottonArt\Inquiry\Subscriber;
 
+use CottonArt\Inquiry\Service\InquiryCustomFieldsManagement;
 use CottonArt\Inquiry\Service\InquiryPayment;
+use Shopware\Core\Checkout\Cart\Order\CartConvertedEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Shopware\Core\Checkout\Cart\Order\CartConvertedEvent;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class InquirySaveSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly RequestStack $requestStack,
-        private readonly EntityRepository $paymentMethodRepository
+        private readonly EntityRepository $paymentMethodRepository,
+        private readonly InquiryCustomFieldsManagement $customFieldsManagement
     ) {
     }
 
@@ -35,20 +40,7 @@ class InquirySaveSubscriber implements EventSubscriberInterface
 
             $orderData['transactions'][0]['paymentMethodId'] = $this->getInquiryPaymentMethodId($event->getSalesChannelContext());
 
-            $orderCustomFields = $orderData['customFields'] ?? [];
-
-            $customInquiryFile = $this->requestStack->getCurrentRequest()->request->get('inquiryUploadedFiles');
-            $customInquiryComment = $this->requestStack->getCurrentRequest()->request->get('inquiryComment');
-
-            if ($customInquiryFile) {
-                $orderCustomFields['custom_cottonartinquiry_file'] = $customInquiryFile;
-            }
-
-            if ($customInquiryComment) {
-                $orderCustomFields['custom_cottonartinquiry_comment'] = $customInquiryComment;
-            }
-
-            $orderData['customFields'] = $orderCustomFields;
+            $orderData['customFields'] = $this->parseCustomFields($orderData);
 
             $event->setConvertedCart($orderData);
         }
@@ -58,5 +50,20 @@ class InquirySaveSubscriber implements EventSubscriberInterface
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', InquiryPayment::class));
         return $this->paymentMethodRepository->searchIds($criteria, $context->getContext())->firstId();
+    }
+
+    private function parseCustomFields(array $orderData): array
+    {
+        $orderCustomFields = $orderData['customFields'] ?? [];
+        $request = $this->requestStack->getCurrentRequest()->request;
+
+        $customFields = $this->customFieldsManagement->getCustomFields();
+        foreach ($customFields as $customField) {
+            $orderCustomFields[$customField->getName()] = $customField->getType() == CustomFieldTypes::SELECT
+                ? $request->all($customField->getName())
+                : $request->get($customField->getName());
+        }
+
+        return $orderCustomFields;
     }
 }
