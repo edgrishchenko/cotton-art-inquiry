@@ -138,24 +138,21 @@
 
         if (parentForm.querySelectorAll('input[type=checkbox]:checked').length > 0) {
             checkboxes.forEach((element) => element.removeAttribute('required'));
-
-            if (parentClass === '.form-logo-placement') {
-                checkFileUpload(logoPlacement, true);
-            }
         } else {
             checkboxes.forEach((element) => element.setAttribute('required', 'required'));
+        }
 
-            if (parentClass === '.form-logo-placement') {
-                checkFileUpload(logoPlacement, false);
-            }
+        if (parentClass === '.form-logo-placement') {
+            checkFileUpload(logoPlacement);
         }
     }
 
-    function checkFileUpload(logoPlacement, isChecked)
+    function checkFileUpload(logoPlacement)
     {
+        const fileCheckbox = document.querySelector('#' + logoPlacement.value);
         const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
 
-        if (fileInput.files.length === 0 && isChecked) {
+        if (fileCheckbox.checked && fileInput.files.length === 0) {
             fileInput.setAttribute('required', 'required');
         } else {
             fileInput.removeAttribute('required');
