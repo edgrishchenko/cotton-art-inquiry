@@ -17,7 +17,6 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use CottonArt\Inquiry\Service\InquiryPayment;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
-use Shopware\Core\Framework\App\Manifest\Xml\CustomField\CustomFieldTypes\MultiSelectField;
 
 class CottonArtInquiry extends Plugin
 {
@@ -94,7 +93,7 @@ class CottonArtInquiry extends Plugin
                                 'en-GB' => 'Finishing Method Type',
                                 'de-DE' => 'Typ der Endbearbeitungsmethode',
                             ],
-                            'componentName' => MultiSelectField::COMPONENT_NAME,
+                            'componentName' => 'sw-multi-select',
                             'customFieldType' => 'select',
                             'options' => [
                                 [
@@ -123,7 +122,7 @@ class CottonArtInquiry extends Plugin
                                 'en-GB' => 'Logo Placement',
                                 'de-DE' => 'Logo-Platzierung',
                             ],
-                            'componentName' => MultiSelectField::COMPONENT_NAME,
+                            'componentName' => 'sw-multi-select',
                             'customFieldType' => 'select',
                             'options' => [
                                 [
@@ -202,7 +201,7 @@ class CottonArtInquiry extends Plugin
                                 'en-GB' => 'Delivery Duration',
                                 'de-DE' => 'Lieferdauer',
                             ],
-                            'componentName' => MultiSelectField::COMPONENT_NAME,
+                            'componentName' => 'sw-multi-select',
                             'customFieldType' => 'select',
                             'options' => [
                                 [
