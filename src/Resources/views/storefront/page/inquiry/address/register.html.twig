@@ -387,7 +387,7 @@
 
                     {% block component_account_register_submit %}
                         <div class="register-submit d-grid col-md-6 offset-md-6">
-                            <button type="submit"
+                            <button type="submit" onclick="checkInquiryForm()"
                                     class="btn btn-primary btn-lg">
                                 {{ "inquiry.sendInquiryRequest"|trans|sw_sanitize }}
                             </button>
@@ -398,3 +398,20 @@
         </div>
     </div>
 {% endblock %}
+
+<script>
+    function checkInquiryForm() {
+        const parents = ['.form-method-type', '.form-logo-placement', '.form-delivery-duration'];
+
+        parents.forEach((element) => {
+            const parentForm = document.querySelector(element);
+            const checkboxes = parentForm.querySelectorAll('input[type=checkbox]');
+
+            if (parentForm.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+                checkboxes.forEach((checkbox) => checkbox.removeAttribute('required'));
+            } else {
+                checkboxes.forEach((checkbox) => checkbox.setAttribute('required', 'required'));
+            }
+        });
+    }
+</script>

@@ -201,7 +201,7 @@ class CottonArtInquiry extends Plugin
                                 'en-GB' => 'Delivery Duration',
                                 'de-DE' => 'Lieferdauer',
                             ],
-                            'componentName' => 'sw-multi-select',
+                            'componentName' => 'sw-single-select',
                             'customFieldType' => 'select',
                             'options' => [
                                 [

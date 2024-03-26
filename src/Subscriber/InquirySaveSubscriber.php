@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace CottonArt\Inquiry\Subscriber;
 
+use CottonArt\Inquiry\CottonArtInquiry;
 use CottonArt\Inquiry\Service\InquiryCustomFieldsManagement;
 use CottonArt\Inquiry\Service\InquiryPayment;
 use Shopware\Core\Checkout\Cart\Order\CartConvertedEvent;
@@ -62,6 +63,11 @@ class InquirySaveSubscriber implements EventSubscriberInterface
             $orderCustomFields[$customField->getName()] = $customField->getType() == CustomFieldTypes::SELECT
                 ? $request->all($customField->getName())
                 : $request->get($customField->getName());
+
+            if ($customField->getName() == CottonArtInquiry::CUSTOM_DELIVERY_DURATION
+                && isset($orderCustomFields[$customField->getName()][0])) {
+                $orderCustomFields[$customField->getName()] = $orderCustomFields[$customField->getName()][0];
+            }
         }
 
         return $orderCustomFields;

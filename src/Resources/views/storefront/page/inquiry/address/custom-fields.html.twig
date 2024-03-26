@@ -102,7 +102,7 @@
                         {% for deliveryType in deliveryOptions %}
                             <li>
                                 <input form="inquiryRegister" type="checkbox" id="{{ deliveryType }}" name="custom_cottonartinquiry_delivery_duration[]" value="{{ deliveryType }}"
-                                       onchange="checkboxValidation('.form-delivery-duration');" required="required"/>
+                                       onchange="checkboxValidation('.form-delivery-duration', '', {{ deliveryType }});" required="required"/>
                                 <label for="{{ deliveryType }}">{{ ("inquiry." ~ deliveryType ~ "Delivery")|trans|sw_sanitize }}</label>
                             </li>
                         {% endfor %}
@@ -132,12 +132,16 @@
 {% endblock %}
 
 <script>
-    function checkboxValidation(parentClass, logoPlacement = '') {
+    function checkboxValidation(parentClass, logoPlacement = '', deliveryType = '') {
         const parentForm = document.querySelector(parentClass);
         const checkboxes = parentForm.querySelectorAll('input[type=checkbox]');
 
         if (parentForm.querySelectorAll('input[type=checkbox]:checked').length > 0) {
             checkboxes.forEach((element) => element.removeAttribute('required'));
+
+            if (parentClass === '.form-delivery-duration') {
+                uncheckOppositeOption(deliveryType);
+            }
         } else {
             checkboxes.forEach((element) => element.setAttribute('required', 'required'));
         }
@@ -157,5 +161,17 @@
         } else {
             fileInput.removeAttribute('required');
         }
+    }
+
+    function uncheckOppositeOption(deliveryType)
+    {
+        const deliveryForm = document.querySelector('.form-delivery-duration');
+        const checkboxes = deliveryForm.querySelectorAll('input[type=checkbox]');
+
+        checkboxes.forEach((element) => {
+            if (element.id !== deliveryType.value) {
+                element.checked = false;
+            }
+        });
     }
 </script>
