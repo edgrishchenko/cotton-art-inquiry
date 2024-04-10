@@ -54,6 +54,7 @@
                                        form="inquiryRegister"
                                        name="{{ logoPlacement ~ "File" }}"
                                        {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
+                                       onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});"
                                 />
                             </li>
                         {% endfor %}
@@ -160,6 +161,16 @@
             fileInput.setAttribute('required', 'required');
         } else {
             fileInput.removeAttribute('required');
+        }
+
+        if (this.event.target.type === 'file') {
+            if (fileInput.files.length !== 0) {
+                fileCheckbox.checked = true;
+            }
+        } else if (this.event.target.type === 'checkbox') {
+            if (!fileCheckbox.checked) {
+                fileInput.value = null;
+            }
         }
     }
 
