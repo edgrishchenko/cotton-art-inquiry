@@ -1,7 +1,6 @@
 {% block page_checkout_inquiry_method_type %}
     <div class="custom-field-block confirm-inquiry-method-type">
         {% block page_checkout_inquiry_method_type_header %}
-            <span class="checkout-mandatory-field">{{ "inquiry.inquiryOptionMandatory"|trans|sw_sanitize }}</span>
             <div class="card-title">
                 {{ "inquiry.finishingMethodTypeHeader"|trans|sw_sanitize }}
             </div>
@@ -31,7 +30,6 @@
 {% block page_checkout_inquiry_logo_placement %}
     <div class="custom-field-block confirm-inquiry-logo-placement">
         {% block page_checkout_inquiry_logo_placement_header %}
-            <span class="checkout-mandatory-field">{{ "inquiry.inquiryOptionMandatory"|trans|sw_sanitize }}</span>
             <div class="card-title">
                 {{ "inquiry.logoPlacementHeader"|trans|sw_sanitize }}
             </div>
@@ -48,6 +46,7 @@
                             <li>
                                 <input form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
                                        onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});" required="required"/>
+                                <img class="logo-place-img" src="{{ logoMedia[logoPlacement] }}" alt="{{ logoPlacement }}" width="60" height="60">
                                 <label for="{{ logoPlacement }}">{{ ("inquiry." ~ logoPlacement) |trans|sw_sanitize }}</label>
                                 <input type="file"
                                        id="{{ logoPlacement ~ "File" }}"
@@ -56,6 +55,8 @@
                                        {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
                                        onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});"
                                 />
+                                <img class="logo-upload-img" src="{{ uploadFileLogo }}" alt="{{ logoPlacement }}" height="60">
+                                <label class="upload-file-label" for="logo-upload-img">{{ "inquiry.dataUpload" |trans|sw_sanitize }}</label>
                             </li>
                         {% endfor %}
                     </ul>
@@ -68,7 +69,6 @@
 {% block page_checkout_inquiry_logo_color %}
     <div class="custom-field-block confirm-inquiry-logo-color">
         {% block page_checkout_inquiry_logo_color_header %}
-            <span class="checkout-optional-field">{{ "inquiry.inquiryOptionalField"|trans|sw_sanitize }}</span>
             <div class="card-title">
                 {{ "inquiry.logoColorHeader"|trans|sw_sanitize }}
                 <span class="logo-color-note"> {{ "inquiry.logoColorNote"|trans|sw_sanitize }} </span>
@@ -90,7 +90,6 @@
 {% block page_checkout_inquiry_delivery_duration %}
     <div class="custom-field-block confirm-inquiry-delivery-duration">
         {% block page_checkout_inquiry_delivery_duration_header %}
-            <span class="checkout-mandatory-field">{{ "inquiry.inquiryOptionMandatory"|trans|sw_sanitize }}</span>
         {% endblock %}
 
         {% block page_checkout_inquiry_delivery_duration_control %}

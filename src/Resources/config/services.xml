@@ -18,6 +18,8 @@
             <argument type="service" id="CottonArt\Inquiry\Service\FileUploader"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement"/>
+            <argument type="service" id="media_folder.repository"/>
+            <argument type="service" id="media.repository"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

@@ -19,6 +19,7 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\Exception\PaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\UnknownPaymentMethodException;
 use Shopware\Core\Checkout\Payment\PaymentService;
+use Shopware\Core\Content\Media\MediaCollection;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -29,6 +30,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Profiling\Profiler;
+use Symfony\Component\Routing\Annotation\Route;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -41,7 +43,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -64,7 +65,9 @@ class InquiryController extends StorefrontController
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
         private readonly SystemConfigService $systemConfigService,
-        private readonly InquiryCustomFieldsManagement $customFieldsManagement
+        private readonly InquiryCustomFieldsManagement $customFieldsManagement,
+        private readonly EntityRepository $mediaFolderRepository,
+        private readonly EntityRepository $mediaRepository
     ) {
     }
 
@@ -101,6 +104,8 @@ class InquiryController extends StorefrontController
             );
         }
 
+        $logoPlacementOptions = $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT);
+
         return $this->renderStorefront(
             '@CottonArtInquiry/storefront/page/inquiry/address/index.html.twig',
             [
@@ -112,8 +117,10 @@ class InquiryController extends StorefrontController
                 'isCustomerLoggedIn' => $isCustomerLoggedIn,
                 'allowedMimeTypes' => $allowedMimeTypes,
                 'finishingMethodOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_METHOD_TYPE),
-                'logoPlacementOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT),
-                'deliveryOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_DELIVERY_DURATION)
+                'logoPlacementOptions' => $logoPlacementOptions,
+                'deliveryOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_DELIVERY_DURATION),
+                'logoMedia' => $this->getLogoPlacementMedia($context, $logoPlacementOptions),
+                'uploadFileLogo' => $this->getUploadFileLogo($context)
             ]
         );
     }
@@ -332,5 +339,56 @@ class InquiryController extends StorefrontController
             CottonArtInquiry::CUSTOM_LOGO_PLACEMENT_FILE,
             json_encode($uploadedFiles)
         );
+    }
+
+    private function getUploadFileLogo(SalesChannelContext $context): ?string
+    {
+        if (!($mediaFolderId = $this->getMediaFolderId($context))) {
+            return null;
+        }
+
+        return $this->getLogoImage($context, $mediaFolderId, 'file-upload')?->first()?->getUrl();
+    }
+
+    private function getLogoPlacementMedia(SalesChannelContext $context, array $logoPlacementOptions): array
+    {
+        if (!($mediaFolderId = $this->getMediaFolderId($context))) {
+            return [];
+        }
+
+        $logoMedia = [];
+        foreach ($logoPlacementOptions as $option) {
+            if (!count($entities = $this->getLogoImage($context, $mediaFolderId, $option))) {
+                $logoMedia[$option] = $this->getLogoImage($context, $mediaFolderId, 't-shirt')?->first()?->getUrl();
+                continue;
+            }
+
+            $logoMedia[$option] = $entities->first()->getUrl();
+        }
+
+        return $logoMedia;
+    }
+
+    private function getLogoImage(SalesChannelContext $context, string $mediaFolderId, string $filename): MediaCollection
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('fileName', $filename));
+        $criteria->addFilter(new EqualsFilter('mediaFolderId', $mediaFolderId));
+
+        return $this->mediaRepository->search($criteria, $context->getContext())->getEntities();
+    }
+
+    private function getMediaFolderId(SalesChannelContext $context): ?string
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('media_folder.defaultFolder.entity', 'inquiry_logo_placements'));
+        $criteria->addAssociation('defaultFolder');
+        $criteria->setLimit(1);
+
+        if ($this->mediaFolderRepository->search($criteria, $context->getContext())->getEntities()->count() == 0) {
+            return null;
+        }
+
+        return $this->mediaFolderRepository->search($criteria, $context->getContext())->getEntities()->first()->id;
     }
 }

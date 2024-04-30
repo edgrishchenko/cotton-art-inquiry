@@ -23,6 +23,7 @@
     "leftSleeve": "Linker Ärmel (max. 7,5 cm)",
     "leftCollar": "Linker Kragen (max. 7,5 cm)",
     "centerNeck": "Am Nacken mittig (max. 11 cm)",
-    "logoPlacementHeader": "Bitte wählen Sie die gewünschte Platzierung und laden Sie Ihr Logo hoch:"
+    "logoPlacementHeader": "Bitte wählen Sie die gewünschte Platzierung und laden Sie Ihr Logo hoch:",
+    "dataUpload": "Datei hochladen"
   }
 }

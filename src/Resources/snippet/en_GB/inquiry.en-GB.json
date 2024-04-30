@@ -23,6 +23,7 @@
     "leftSleeve": "Left sleeve (max. 7.5 cm)",
     "leftCollar": "Left collar (max. 7.5 cm)",
     "centerNeck": "Center neck (max. 11 cm)",
-    "logoPlacementHeader": "Please select the desired placement and upload your logo:"
+    "logoPlacementHeader": "Please select the desired placement and upload your logo:",
+    "dataUpload": "Upload file"
   }
 }
