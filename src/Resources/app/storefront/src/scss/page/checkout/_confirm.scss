@@ -77,3 +77,27 @@
 .form-logo-placement li:nth-child(5n) {
   clear: left;
 }
+
+.form-logo-placement .uploaded-section {
+  display: grid;
+  text-align: center;
+  line-height: 10px;
+  margin-top: 10px;
+}
+
+.form-logo-placement .uploaded-filename {
+  font-size: xx-small;
+}
+
+.form-logo-placement .delete-file-label {
+  font-size: large;
+  margin-top: 8px;
+  color: #931b1b;
+}
+
+.form-logo-placement .delete-file {
+  display: block;
+  height: 30px;
+  width: 40px;
+  margin-left: 35px;
+}

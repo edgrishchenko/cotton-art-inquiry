@@ -43,7 +43,7 @@
                 <fieldset>
                     <ul>
                         {% for logoPlacement in logoPlacementOptions %}
-                            <li>
+                            <li class="{{ logoPlacement }}">
                                 <input form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
                                        onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});" required="required"/>
                                 <img class="logo-place-img" src="{{ logoMedia[logoPlacement] }}" alt="{{ logoPlacement }}" width="60" height="60">
@@ -57,6 +57,9 @@
                                 />
                                 <img class="logo-upload-img" src="{{ uploadFileLogo }}" alt="{{ logoPlacement }}" height="60">
                                 <label class="upload-file-label" for="logo-upload-img">{{ "inquiry.dataUpload" |trans|sw_sanitize }}</label>
+                                <span class="uploaded-section uploaded-filename" style="display:none"></span>
+                                <input class="uploaded-section delete-file" type="checkbox" style="display:none" onchange="deleteFile({{ logoPlacement }});"/>
+                                <label class="uploaded-section delete-file-label" for="delete-file" style="display:none">&#10005;</label>
                             </li>
                         {% endfor %}
                     </ul>
@@ -165,12 +168,41 @@
         if (this.event.target.type === 'file') {
             if (fileInput.files.length !== 0) {
                 fileCheckbox.checked = true;
+                showFilename(logoPlacement, fileInput);
             }
         } else if (this.event.target.type === 'checkbox') {
             if (!fileCheckbox.checked) {
                 fileInput.value = null;
             }
         }
+    }
+
+    function showFilename(logoPlacement, fileInput)
+    {
+        document.querySelector('.' + logoPlacement.value + ' .logo-upload-img').style.display = 'none';
+        document.querySelector('.' + logoPlacement.value + ' .upload-file-label').style.display = 'none';
+        document.querySelector('#' + logoPlacement.value + 'File').style.display = 'none';
+
+        var uploadedSections = document.querySelectorAll('.' + logoPlacement.value + ' .uploaded-section');
+        uploadedSections.forEach((element) => element.style.display = 'block');
+
+        document.querySelector('.' + logoPlacement.value + ' .uploaded-filename').textContent = fileInput.files[0].name;
+    }
+
+    function deleteFile(logoPlacement)
+    {
+        document.querySelector('.' + logoPlacement.value + ' .logo-upload-img').style.display = 'block';
+        document.querySelector('.' + logoPlacement.value + ' .upload-file-label').style.display = 'block';
+        document.querySelector('#' + logoPlacement.value + 'File').style.display = 'block';
+
+        var uploadedSections = document.querySelectorAll('.' + logoPlacement.value + ' .uploaded-section');
+        uploadedSections.forEach((element) => element.style.display = 'none');
+
+        const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
+        fileInput.files = null;
+        fileInput.value = null;
+
+        checkboxValidation('.form-logo-placement', logoPlacement);
     }
 
     function uncheckOppositeOption(deliveryType)
