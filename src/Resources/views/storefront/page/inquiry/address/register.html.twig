@@ -405,9 +405,9 @@
 
         parents.forEach((element) => {
             const parentForm = document.querySelector(element);
-            const checkboxes = parentForm.querySelectorAll('input[type=checkbox]');
+            const checkboxes = parentForm.querySelectorAll('input[type=checkbox]:not(.delete-file)');
 
-            if (parentForm.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+            if (parentForm.querySelectorAll('input[type=checkbox]:checked:not(.delete-file)').length > 0) {
                 checkboxes.forEach((checkbox) => checkbox.removeAttribute('required'));
             } else {
                 checkboxes.forEach((checkbox) => checkbox.setAttribute('required', 'required'));

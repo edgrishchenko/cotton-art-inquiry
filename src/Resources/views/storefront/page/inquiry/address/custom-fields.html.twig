@@ -159,12 +159,6 @@
         const fileCheckbox = document.querySelector('#' + logoPlacement.value);
         const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
 
-        if (fileCheckbox.checked && fileInput.files.length === 0) {
-            fileInput.setAttribute('required', 'required');
-        } else {
-            fileInput.removeAttribute('required');
-        }
-
         if (this.event.target.type === 'file') {
             if (fileInput.files.length !== 0) {
                 fileCheckbox.checked = true;
@@ -187,6 +181,8 @@
         uploadedSections.forEach((element) => element.style.display = 'block');
 
         document.querySelector('.' + logoPlacement.value + ' .uploaded-filename').textContent = fileInput.files[0].name;
+
+        checkCheckboxes();
     }
 
     function deleteFile(logoPlacement)
@@ -203,6 +199,11 @@
         fileInput.value = null;
         document.querySelector('#' + logoPlacement.value).checked = false;
 
+        checkCheckboxes();
+    }
+
+    function checkCheckboxes()
+    {
         const parentForm = document.querySelector('.form-logo-placement');
         const checkboxes = parentForm.querySelectorAll('input[type=checkbox]:not(.delete-file)');
 
