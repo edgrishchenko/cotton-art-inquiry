@@ -137,9 +137,9 @@
 <script>
     function checkboxValidation(parentClass, logoPlacement = '', deliveryType = '') {
         const parentForm = document.querySelector(parentClass);
-        const checkboxes = parentForm.querySelectorAll('input[type=checkbox]');
+        const checkboxes = parentForm.querySelectorAll('input[type=checkbox]:not(.delete-file)');
 
-        if (parentForm.querySelectorAll('input[type=checkbox]:checked').length > 0) {
+        if (parentForm.querySelectorAll('input[type=checkbox]:checked:not(.delete-file)').length > 0) {
             checkboxes.forEach((element) => element.removeAttribute('required'));
 
             if (parentClass === '.form-delivery-duration') {
@@ -201,8 +201,16 @@
         const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
         fileInput.files = null;
         fileInput.value = null;
+        document.querySelector('#' + logoPlacement.value).checked = false;
 
-        checkboxValidation('.form-logo-placement', logoPlacement);
+        const parentForm = document.querySelector('.form-logo-placement');
+        const checkboxes = parentForm.querySelectorAll('input[type=checkbox]:not(.delete-file)');
+
+        if (parentForm.querySelectorAll('input[type=checkbox]:checked:not(.delete-file)').length > 0) {
+            checkboxes.forEach((element) => element.removeAttribute('required'));
+        } else {
+            checkboxes.forEach((element) => element.setAttribute('required', 'required'));
+        }
     }
 
     function uncheckOppositeOption(deliveryType)

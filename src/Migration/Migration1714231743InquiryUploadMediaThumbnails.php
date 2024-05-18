@@ -34,12 +34,10 @@ class Migration1714231743InquiryUploadMediaThumbnails extends MigrationStep
             'REPLACE INTO `media_default_folder` SET
                 id = :id,
                 entity = :entity,
-                association_fields = :association_fields,
                 created_at = :created_at;',
             [
                 'id' => $defaultFolderId,
                 'entity' => 'inquiry_logo_placements',
-                'association_fields' => '["inquiryLogoPlacements"]',
                 'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ]
         );
