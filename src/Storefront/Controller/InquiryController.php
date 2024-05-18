@@ -24,13 +24,14 @@ use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundExcepti
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Profiling\Profiler;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -46,9 +47,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * @Route(defaults={"_routeScope"={"storefront"}})
- */
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class InquiryController extends StorefrontController
 {
     private const REDIRECTED_FROM_SAME_ROUTE = 'redirected';
@@ -71,9 +70,7 @@ class InquiryController extends StorefrontController
     ) {
     }
 
-    /**
-     * @Route("/inquiry/register", name="frontend.inquiry.register.page", options={"seo"=false}, defaults={"_noStore"=true}, methods={"GET"})
-     */
+    #[Route(path: '/inquiry/register', name: 'frontend.inquiry.register.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
     public function inquiryRegisterPage(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
         $context->addState('inquiry');
@@ -125,9 +122,7 @@ class InquiryController extends StorefrontController
         );
     }
 
-    /**
-     * @Route("/inquiry/register/save", name="frontend.inquiry.register.save", defaults={"_captcha"=true}, methods={"POST"})
-     */
+    #[Route(path: '/inquiry/register/save', name: 'frontend.inquiry.register.save', defaults: ['_captcha' => true], methods: ['POST'])]
     public function register(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
         try {
@@ -167,9 +162,7 @@ class InquiryController extends StorefrontController
         return $this->forwardToRoute($request->get('redirectTo'));
     }
 
-    /**
-     * @Route("/inquiry/save", name="frontend.inquiry.save", options={"seo"=false})
-     */
+    #[Route(path: '/inquiry/save', name: 'frontend.inquiry.save', options: ['seo' => false])]
     public function inquirySave(RequestDataBag $data, SalesChannelContext $context, Request $request): Response
     {
         try {
@@ -220,9 +213,7 @@ class InquiryController extends StorefrontController
         }
     }
 
-    /**
-     * @Route("/inquiry/finish", name="frontend.inquiry.finish.page", options={"seo"=false}, defaults={"_noStore"=true}, methods={"GET"})
-     */
+    #[Route(path: '/inquiry/finish', name: 'frontend.inquiry.finish.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
     public function finishPage(Request $request, SalesChannelContext $context, RequestDataBag $dataBag): Response
     {
         if (!$context->getCustomer()) {
