@@ -57,12 +57,14 @@ class InquiryMailService extends AbstractMailService
             if (count($uploadedFiles)) {
                 $binAttachments = [];
 
-                foreach ($uploadedFiles as $file) {
-                    $binAttachments[] = [
-                        'content' => file_get_contents($file),
-                        'fileName' => basename($file),
-                        'mimeType' => MimeType::fromFilename($file)
-                    ];
+                foreach ($uploadedFiles as $optionKey => $files) {
+                    foreach (explode(', ', $files) as $file) {
+                        $binAttachments[] = [
+                            'content' => file_get_contents($file),
+                            'fileName' => basename($file),
+                            'mimeType' => MimeType::fromFilename($file)
+                        ];
+                    }
                 }
 
                 $data['binAttachments'] = $binAttachments;

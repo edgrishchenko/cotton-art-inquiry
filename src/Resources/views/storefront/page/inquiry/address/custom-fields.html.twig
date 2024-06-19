@@ -51,7 +51,8 @@
                                 <input type="file"
                                        id="{{ logoPlacement ~ "File" }}"
                                        form="inquiryRegister"
-                                       name="{{ logoPlacement ~ "File" }}"
+                                       name="{{ logoPlacement ~ "File[]" }}"
+                                       multiple="multiple"
                                        {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
                                        onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});"
                                 />
@@ -180,7 +181,11 @@
         var uploadedSections = document.querySelectorAll('.' + logoPlacement.value + ' .uploaded-section');
         uploadedSections.forEach((element) => element.style.display = 'block');
 
-        document.querySelector('.' + logoPlacement.value + ' .uploaded-filename').textContent = fileInput.files[0].name;
+        var filenames = '';
+        for (var i = 0; i < fileInput.files.length; i++) {
+            filenames += fileInput.files[i].name + '; ';
+        }
+        document.querySelector('.' + logoPlacement.value + ' .uploaded-filename').textContent = filenames;
 
         checkCheckboxes();
     }
