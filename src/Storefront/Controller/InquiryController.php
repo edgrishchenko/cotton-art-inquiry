@@ -322,8 +322,8 @@ class InquiryController extends StorefrontController
             }
 
             $storefrontUrl = $this->getConfirmUrl($context, $request);
-            $uploadedFile = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload([$uploadedFile], $context, $option));
-            $uploadedFiles[$option] = $uploadedFile[0];
+            $uploadedFile = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload([$uploadedFile], $context));
+            $uploadedFiles[$option] = implode(', ', $uploadedFile);
         }
 
         $request->request->set(

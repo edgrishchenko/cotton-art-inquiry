@@ -19,7 +19,7 @@ class FileUploader
     ) {
     }
 
-    public function upload(array $files, SalesChannelContext $context, string $newFilename = ''): array
+    public function upload(array $files, SalesChannelContext $context): array
     {
         $definition = [];
         if ($this->getMaxFileSize($context)) {
@@ -39,7 +39,7 @@ class FileUploader
         $uploadedFiles = [];
 
         if (count($definition) > 0) {
-            foreach ($files as $file) {
+            foreach ($files[0] as $file) {
                 $violations = $this->validator->validate($file, new File($definition));
 
                 if ($violations->count() > 0) {
@@ -49,10 +49,10 @@ class FileUploader
         }
         unset($file);
 
-        foreach ($files as $file) {
+        foreach ($files[0] as $file) {
             $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $safeFilename = $slugger->slug($originalFilename);
-            $fileName = ($newFilename ?: $safeFilename) . '.' . $file->guessExtension();
+            $fileName = $safeFilename . '.' . $file->guessExtension();
 
             $file->move($this->projectDir . $fileFolder, $fileName);
             $uploadedFiles[] = $fileFolder . '/' . $fileName;

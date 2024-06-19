@@ -87,6 +87,8 @@
 
 .form-logo-placement .uploaded-filename {
   font-size: xx-small;
+  white-space: nowrap;
+  overflow: auto;
 }
 
 .form-logo-placement .delete-file-label {
