@@ -24,7 +24,6 @@ use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundExcepti
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -53,7 +52,6 @@ class InquiryController extends StorefrontController
     private const REDIRECTED_FROM_SAME_ROUTE = 'redirected';
 
     public function __construct(
-        private readonly EntityRepository $shippingMethodRepository,
         private readonly AbstractRegisterRoute $registerRoute,
         private readonly AbstractLogoutRoute $logoutRoute,
         private readonly CheckoutRegisterPageLoader $registerPageLoader,
@@ -73,8 +71,6 @@ class InquiryController extends StorefrontController
     #[Route(path: '/inquiry/register', name: 'frontend.inquiry.register.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
     public function inquiryRegisterPage(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
-        $context->addState('inquiry');
-
         $isCustomerLoggedIn = (bool)$context->getCustomer();
         $allowedMimeTypes = $this->systemConfigService->get('CottonArtInquiry.config.allowedMimeTypes', $context->getSalesChannel()->getId());
 
@@ -170,12 +166,6 @@ class InquiryController extends StorefrontController
             $context->addState('inquiry-saved');
 
             $this->parseLogoFiles($context, $request);
-
-            $criteria = new Criteria([CottonArtInquiry::SHIPPING_METHOD_ID]);
-            $shippingMethod = $this->shippingMethodRepository->search($criteria, $context->getContext())->first();
-            $context->assign([
-                'shippingMethod' => $shippingMethod,
-            ]);
 
             $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder(new RequestDataBag(['tos' => 'on']), $context));
         } catch (ConstraintViolationException $formViolations) {

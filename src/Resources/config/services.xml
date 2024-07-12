@@ -6,7 +6,6 @@
 
     <services>
         <service id="CottonArt\Inquiry\Storefront\Controller\InquiryController" public="true">
-            <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LogoutRoute"/>
             <argument type="service" id="Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader"/>
@@ -40,16 +39,8 @@
             <tag name="shopware.payment.method.sync" />
         </service>
 
-        <service id="CottonArt\Inquiry\Service\InquiryShipping">
-            <argument type="service" id="shipping_method.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\CartCalculator"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
-        </service>
-
         <service id="CottonArt\Inquiry\Subscriber\InquirySaveSubscriber">
             <argument type="service" id="request_stack"/>
-            <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement"/>
             <tag name="kernel.event_subscriber"/>
         </service>
@@ -57,11 +48,6 @@
         <service id="CottonArt\Inquiry\Subscriber\InquiryConfirmSubscriber">
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="shipping_method.repository"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
-        <service id="CottonArt\Inquiry\Subscriber\InquiryRegisterSubscriber">
-            <argument type="service" id="CottonArt\Inquiry\Service\InquiryShipping"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -85,6 +71,15 @@
 
         <service id="CottonArt\Inquiry\Extension\CsrfFunctionExtension">
             <tag name="twig.extension"/>
+        </service>
+
+        <service id="CottonArt\Inquiry\Core\Checkout\Cart\InquiryCartProcessor">
+            <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\Delivery\DeliveryBuilder"/>
+            <argument type="service" id="request_stack"/>
+
+            <tag name="shopware.cart.processor" priority="-5001" />
         </service>
     </services>
 </container>
