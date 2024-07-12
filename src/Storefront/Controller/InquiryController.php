@@ -97,6 +97,9 @@ class InquiryController extends StorefrontController
             );
         }
 
+        // clearing files for error redirect
+        $_FILES = [];
+
         $logoPlacementOptions = $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_LOGO_PLACEMENT);
 
         return $this->renderStorefront(
