@@ -15,9 +15,11 @@
                     <ul>
                         {% for methodType in finishingMethodOptions %}
                             <li>
-                                <input form="inquiryRegister" type="checkbox" id="{{ methodType }}" name="custom_cottonartinquiry_method_type[]"
-                                       value="{{ methodType }}" onchange="checkboxValidation('.form-method-type');" required="required" />
-                                <label for="{{ methodType }}">{{ ("inquiry." ~ methodType ~ "Option")|trans|sw_sanitize }}</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" form="inquiryRegister" type="checkbox" id="{{ methodType }}" name="custom_cottonartinquiry_method_type[]"
+                                           value="{{ methodType }}" onchange="checkboxValidation('.form-method-type');" required="required" />
+                                    <label class="custom-control-label" for="{{ methodType }}">{{ ("inquiry." ~ methodType ~ "Option")|trans|sw_sanitize }}</label>
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>
@@ -44,7 +46,7 @@
                     <ul>
                         {% for logoPlacement in logoPlacementOptions %}
                             <li class="{{ logoPlacement }}">
-                                <input form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
+                                <input class="visually-hidden" form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
                                        onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});" required="required"/>
                                 <img class="logo-place-img" src="{{ logoMedia[logoPlacement] }}" alt="{{ logoPlacement }}" width="60" height="60">
                                 <label for="{{ logoPlacement }}">{{ ("inquiry." ~ logoPlacement) |trans|sw_sanitize }}</label>
@@ -105,9 +107,11 @@
                     <ul>
                         {% for deliveryType in deliveryOptions %}
                             <li>
-                                <input form="inquiryRegister" type="checkbox" id="{{ deliveryType }}" name="custom_cottonartinquiry_delivery_duration[]" value="{{ deliveryType }}"
-                                       onchange="checkboxValidation('.form-delivery-duration', '', {{ deliveryType }});" required="required"/>
-                                <label for="{{ deliveryType }}">{{ ("inquiry." ~ deliveryType ~ "Delivery")|trans|sw_sanitize }}</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" form="inquiryRegister" type="checkbox" id="{{ deliveryType }}" name="custom_cottonartinquiry_delivery_duration[]" value="{{ deliveryType }}"
+                                           onchange="checkboxValidation('.form-delivery-duration', '', {{ deliveryType }});" required="required"/>
+                                    <label class="custom-control-label" for="{{ deliveryType }}">{{ ("inquiry." ~ deliveryType ~ "Delivery")|trans|sw_sanitize }}</label>
+                                </div>
                             </li>
                         {% endfor %}
                     </ul>
