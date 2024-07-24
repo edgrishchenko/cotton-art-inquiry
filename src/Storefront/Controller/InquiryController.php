@@ -314,7 +314,7 @@ class InquiryController extends StorefrontController
                 continue;
             }
 
-            $storefrontUrl = $this->getConfirmUrl($context, $request);
+            $storefrontUrl = $request->attributes->get(RequestTransformer::SALES_CHANNEL_ABSOLUTE_BASE_URL);
             $uploadedFile = array_map(fn($file): string => $storefrontUrl . $file, $this->fileUploader->upload([$uploadedFile], $context));
             $uploadedFiles[$option] = implode(', ', $uploadedFile);
         }
