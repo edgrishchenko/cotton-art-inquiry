@@ -9,7 +9,7 @@
             <name>allowedMimeTypes</name>
             <label>Allowed MIME types (separate by comma)</label>
             <label lang="de-DE">Zulässige MIME-Typen(durch Komma getrennt)</label>
-            <defaultValue>image/jpeg, image/png,text/csv, application/msword, application/pdf</defaultValue>
+            <defaultValue>image/jpeg,image/png,text/csv,application/msword,application/pdf</defaultValue>
         </input-field>
 
         <input-field type="int">

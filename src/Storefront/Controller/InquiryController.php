@@ -30,6 +30,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Profiling\Profiler;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -68,11 +69,37 @@ class InquiryController extends StorefrontController
     ) {
     }
 
+    #[Route(path: '/inquiry/file-upload', name: 'frontend.inquiry.file.upload', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
+    public function inquiryUpload(Request $request): Response
+    {
+        $uploadedFiles = $request->getSession()->get('uploadedFiles');
+
+        $lastUploadedFiles = $request->request->all();
+        foreach ($lastUploadedFiles as $name => $base64) {
+            $uploadedFiles[$name] = $base64;
+        }
+
+        $request->getSession()->set('uploadedFiles', $uploadedFiles);
+
+        return $this->createActionResponse($request);
+    }
+
+    #[Route(path: '/inquiry/file-upload-error', name: 'frontend.inquiry.file.upload.error', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
+    public function inquiryUploadError(Request $request): Response
+    {
+        $message = json_decode($request->getContent(), true)['error'];
+
+        $this->addFlash(self::DANGER, $message);
+
+        return $this->createActionResponse($request);
+    }
+    
     #[Route(path: '/inquiry/register', name: 'frontend.inquiry.register.page', options: ['seo' => false], defaults: ['_noStore' => true], methods: ['GET'])]
     public function inquiryRegisterPage(Request $request, RequestDataBag $data, SalesChannelContext $context): Response
     {
         $isCustomerLoggedIn = (bool)$context->getCustomer();
         $allowedMimeTypes = $this->systemConfigService->get('CottonArtInquiry.config.allowedMimeTypes', $context->getSalesChannel()->getId());
+        $maxFileSize = $this->systemConfigService->get('CottonArtInquiry.config.maxFileSize', $context->getSalesChannel()->getId());
 
         $redirect = $request->get('redirectTo', 'frontend.inquiry.save');
         $errorRoute = $request->attributes->get('_route');
@@ -112,11 +139,13 @@ class InquiryController extends StorefrontController
                 'isInquiry' => true,
                 'isCustomerLoggedIn' => $isCustomerLoggedIn,
                 'allowedMimeTypes' => $allowedMimeTypes,
+                'maxFileSize' => $maxFileSize,
                 'finishingMethodOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_METHOD_TYPE),
                 'logoPlacementOptions' => $logoPlacementOptions,
                 'deliveryOptions' => $this->customFieldsManagement->getOptionValuesByName(CottonArtInquiry::CUSTOM_DELIVERY_DURATION),
                 'logoMedia' => $this->getLogoPlacementMedia($context, $logoPlacementOptions),
-                'uploadFileLogo' => $this->getUploadFileLogo($context)
+                'uploadFileLogo' => $this->getUploadFileLogo($context),
+                'uploadedFiles' => $this->getUploadedFiles($request)
             ]
         );
     }
@@ -169,6 +198,7 @@ class InquiryController extends StorefrontController
             $context->addState('inquiry-saved');
 
             $this->parseLogoFiles($context, $request);
+            $request->getSession()->remove('uploadedFiles');
 
             $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder(new RequestDataBag(['tos' => 'on']), $context));
         } catch (ConstraintViolationException $formViolations) {
@@ -374,5 +404,10 @@ class InquiryController extends StorefrontController
         }
 
         return $this->mediaFolderRepository->search($criteria, $context->getContext())->getEntities()->first()->id;
+    }
+
+    private function getUploadedFiles(Request $request): ?array
+    {
+        return $request->getSession()->get('uploadedFiles');
     }
 }

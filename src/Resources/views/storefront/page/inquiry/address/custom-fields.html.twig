@@ -16,8 +16,8 @@
                         {% for methodType in finishingMethodOptions %}
                             <li>
                                 <div class="form-check">
-                                    <input class="form-check-input" form="inquiryRegister" type="checkbox" id="{{ methodType }}" name="custom_cottonartinquiry_method_type[]"
-                                           value="{{ methodType }}" onchange="checkboxValidation('.form-method-type');" required="required" />
+                                    <input class="form-check-input method-type" form="inquiryRegister" type="checkbox" id="{{ methodType }}" name="custom_cottonartinquiry_method_type[]"
+                                           value="{{ methodType }}" required="required" />
                                     <label class="custom-control-label" for="{{ methodType }}">{{ ("inquiry." ~ methodType ~ "Option")|trans|sw_sanitize }}</label>
                                 </div>
                             </li>
@@ -46,22 +46,26 @@
                     <ul>
                         {% for logoPlacement in logoPlacementOptions %}
                             <li class="{{ logoPlacement }}">
-                                <input class="visually-hidden" form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
-                                       onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});" required="required"/>
+                                <input class="visually-hidden logo-placement" form="inquiryRegister" type="checkbox" id="{{ logoPlacement }}" name="custom_cottonartinquiry_logo_placement[]" value="{{ logoPlacement }}"
+                                       required="required"/>
                                 <img class="logo-place-img" src="{{ logoMedia[logoPlacement] }}" alt="{{ logoPlacement }}" width="60" height="60">
                                 <label for="{{ logoPlacement }}">{{ ("inquiry." ~ logoPlacement) |trans|sw_sanitize }}</label>
                                 <input type="file"
                                        id="{{ logoPlacement ~ "File" }}"
+                                       class="logo-placement-file"
                                        form="inquiryRegister"
                                        name="{{ logoPlacement ~ "File[]" }}"
                                        multiple="multiple"
                                        {% if allowedMimeTypes %}accept="{{ allowedMimeTypes }}"{% endif %}
-                                       onchange="checkboxValidation('.form-logo-placement', {{ logoPlacement }});"
+                                       data-logo-placement="{{ logoPlacement }}"
                                 />
                                 <img class="logo-upload-img" src="{{ uploadFileLogo }}" alt="{{ logoPlacement }}" height="60">
                                 <label class="upload-file-label" for="logo-upload-img">{{ "inquiry.dataUpload" |trans|sw_sanitize }}</label>
                                 <span class="uploaded-section uploaded-filename" style="display:none"></span>
-                                <input class="uploaded-section delete-file" type="checkbox" style="display:none" onchange="deleteFile({{ logoPlacement }});"/>
+                                <input class="uploaded-section delete-file"
+                                       type="checkbox"
+                                       style="display:none"
+                                       data-logo-placement="{{ logoPlacement }}"/>
                                 <label class="uploaded-section delete-file-label" for="delete-file" style="display:none">&#10005;</label>
                             </li>
                         {% endfor %}
@@ -108,8 +112,8 @@
                         {% for deliveryType in deliveryOptions %}
                             <li>
                                 <div class="form-check">
-                                    <input class="form-check-input" form="inquiryRegister" type="checkbox" id="{{ deliveryType }}" name="custom_cottonartinquiry_delivery_duration[]" value="{{ deliveryType }}"
-                                           onchange="checkboxValidation('.form-delivery-duration', '', {{ deliveryType }});" required="required"/>
+                                    <input class="form-check-input delivery-type" form="inquiryRegister" type="checkbox" id="{{ deliveryType }}" name="custom_cottonartinquiry_delivery_duration[]" value="{{ deliveryType }}"
+                                           required="required"/>
                                     <label class="custom-control-label" for="{{ deliveryType }}">{{ ("inquiry." ~ deliveryType ~ "Delivery")|trans|sw_sanitize }}</label>
                                 </div>
                             </li>
@@ -138,100 +142,3 @@
         {% endblock %}
     </div>
 {% endblock %}
-
-<script>
-    function checkboxValidation(parentClass, logoPlacement = '', deliveryType = '') {
-        const parentForm = document.querySelector(parentClass);
-        const checkboxes = parentForm.querySelectorAll('input[type=checkbox]:not(.delete-file)');
-
-        if (parentForm.querySelectorAll('input[type=checkbox]:checked:not(.delete-file)').length > 0) {
-            checkboxes.forEach((element) => element.removeAttribute('required'));
-
-            if (parentClass === '.form-delivery-duration') {
-                uncheckOppositeOption(deliveryType);
-            }
-        } else {
-            checkboxes.forEach((element) => element.setAttribute('required', 'required'));
-        }
-
-        if (parentClass === '.form-logo-placement') {
-            checkFileUpload(logoPlacement);
-        }
-    }
-
-    function checkFileUpload(logoPlacement)
-    {
-        const fileCheckbox = document.querySelector('#' + logoPlacement.value);
-        const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
-
-        if (this.event.target.type === 'file') {
-            if (fileInput.files.length !== 0) {
-                fileCheckbox.checked = true;
-                showFilename(logoPlacement, fileInput);
-            }
-        } else if (this.event.target.type === 'checkbox') {
-            if (!fileCheckbox.checked) {
-                fileInput.value = null;
-            }
-        }
-    }
-
-    function showFilename(logoPlacement, fileInput)
-    {
-        document.querySelector('.' + logoPlacement.value + ' .logo-upload-img').style.display = 'none';
-        document.querySelector('.' + logoPlacement.value + ' .upload-file-label').style.display = 'none';
-        document.querySelector('#' + logoPlacement.value + 'File').style.display = 'none';
-
-        var uploadedSections = document.querySelectorAll('.' + logoPlacement.value + ' .uploaded-section');
-        uploadedSections.forEach((element) => element.style.display = 'block');
-
-        var filenames = '';
-        for (var i = 0; i < fileInput.files.length; i++) {
-            filenames += fileInput.files[i].name + '; ';
-        }
-        document.querySelector('.' + logoPlacement.value + ' .uploaded-filename').textContent = filenames;
-
-        checkCheckboxes();
-    }
-
-    function deleteFile(logoPlacement)
-    {
-        document.querySelector('.' + logoPlacement.value + ' .logo-upload-img').style.display = 'block';
-        document.querySelector('.' + logoPlacement.value + ' .upload-file-label').style.display = 'block';
-        document.querySelector('#' + logoPlacement.value + 'File').style.display = 'block';
-
-        var uploadedSections = document.querySelectorAll('.' + logoPlacement.value + ' .uploaded-section');
-        uploadedSections.forEach((element) => element.style.display = 'none');
-
-        const fileInput = document.querySelector('#' + logoPlacement.value + 'File');
-        fileInput.files = null;
-        fileInput.value = null;
-        document.querySelector('#' + logoPlacement.value).checked = false;
-
-        checkCheckboxes();
-    }
-
-    function checkCheckboxes()
-    {
-        const parentForm = document.querySelector('.form-logo-placement');
-        const checkboxes = parentForm.querySelectorAll('input[type=checkbox]:not(.delete-file)');
-
-        if (parentForm.querySelectorAll('input[type=checkbox]:checked:not(.delete-file)').length > 0) {
-            checkboxes.forEach((element) => element.removeAttribute('required'));
-        } else {
-            checkboxes.forEach((element) => element.setAttribute('required', 'required'));
-        }
-    }
-
-    function uncheckOppositeOption(deliveryType)
-    {
-        const deliveryForm = document.querySelector('.form-delivery-duration');
-        const checkboxes = deliveryForm.querySelectorAll('input[type=checkbox]');
-
-        checkboxes.forEach((element) => {
-            if (element.id !== deliveryType.value) {
-                element.checked = false;
-            }
-        });
-    }
-</script>

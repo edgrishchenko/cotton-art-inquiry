@@ -14,8 +14,18 @@
             </h1>
         {% endblock %}
 
+        {% set inquiryPluginOptions = {
+            uploadedFiles: uploadedFiles,
+            forwardTo: path('frontend.inquiry.file.upload'),
+            errorForwardTo: path('frontend.inquiry.file.upload.error'),
+            maxFileSize: maxFileSize,
+            allowedMimeTypes: allowedMimeTypes
+        } %}
         {% block inquiry_custom_fields %}
-            {% sw_include '@CottonArtInquiry/storefront/page/inquiry/address/custom-fields.html.twig' %}
+            <div data-inquiry-plugin="true"
+                 data-inquiry-plugin-options="{{ inquiryPluginOptions|json_encode }}">
+                {% sw_include '@CottonArtInquiry/storefront/page/inquiry/address/custom-fields.html.twig' %}
+            </div>
         {% endblock %}
 
         {% block page_checkout_address_register %}
