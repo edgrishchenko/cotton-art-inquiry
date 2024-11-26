@@ -20,8 +20,8 @@ export default class InquiryPlugin extends Plugin {
     }
 
     registerEvents() {
-        const checkboxes = DomAccess.querySelectorAll(this.el, '[type="checkbox"]');
-        checkboxes.forEach((checkbox) => {
+        const fileCheckboxes = DomAccess.querySelectorAll(this.el, '[type="checkbox"]');
+        fileCheckboxes.forEach((checkbox) => {
             if (checkbox.classList.contains('method-type')) {
                 checkbox.addEventListener('change', this.checkboxValidation.bind(this, '.form-method-type', '', '', event));
             }
@@ -44,6 +44,28 @@ export default class InquiryPlugin extends Plugin {
             if (fileInput.classList.contains('logo-placement-file')) {
                 fileInput.addEventListener('change', this.checkboxValidation.bind(this, '.form-logo-placement', fileInput.dataset.logoPlacement, event));
             }
+        });
+
+        const inputs = DomAccess.querySelectorAll(this.el, 'input[type="text"], textarea');
+        inputs.forEach((input) => {
+            if (sessionStorage.getItem(input.name)) {
+                input.value = sessionStorage.getItem(input.name);
+                input.dispatchEvent(new Event('change'));
+            }
+            input.addEventListener('change', () => {
+                sessionStorage.setItem(input.name, input.value);
+            });
+        });
+
+        const checkboxes = DomAccess.querySelectorAll(this.el, '.method-type, .delivery-type');
+        checkboxes.forEach((checkbox) => {
+            const storedValue = sessionStorage.getItem(checkbox.id);
+            if (storedValue) {
+                checkbox.checked = storedValue === 'true';
+            }
+            checkbox.addEventListener('change', () => {
+                sessionStorage.setItem(checkbox.id, checkbox.checked);
+            });
         });
     }
 
@@ -243,6 +265,7 @@ export default class InquiryPlugin extends Plugin {
         checkboxes.forEach((element) => {
             if (element.id !== deliveryType) {
                 element.checked = false;
+                sessionStorage.setItem(element.id, false);
             }
         });
     }

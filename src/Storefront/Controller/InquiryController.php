@@ -15,10 +15,9 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AbstractLogoutRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Checkout\Order\Exception\EmptyCartException;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderService;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
-use Shopware\Core\Checkout\Payment\Exception\PaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\UnknownPaymentMethodException;
-use Shopware\Core\Checkout\Payment\PaymentService;
+use Shopware\Core\Checkout\Payment\PaymentException;
+use Shopware\Core\Checkout\Payment\PaymentProcessor;
+use Shopware\Core\Content\Flow\FlowException;
 use Shopware\Core\Content\Media\MediaCollection;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -30,7 +29,9 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Profiling\Profiler;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
+use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -59,7 +60,7 @@ class InquiryController extends StorefrontController
         private readonly InquiryFinishPageLoader $finishPageLoader,
         private readonly CartService $cartService,
         private readonly OrderService $orderService,
-        private readonly PaymentService $paymentService,
+        private readonly PaymentProcessor $paymentProcessor,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
         private readonly SystemConfigService $systemConfigService,
@@ -200,7 +201,10 @@ class InquiryController extends StorefrontController
             $this->parseLogoFiles($context, $request);
             $request->getSession()->remove('uploadedFiles');
 
-            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder(new RequestDataBag(['tos' => 'on']), $context));
+            $data->set('tos', 'on');
+            $this->addAffiliateTracking($data, $request->getSession());
+
+            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
         } catch (ConstraintViolationException $formViolations) {
             return $this->forwardToRoute('frontend.inquiry.register.page', ['formViolations' => $formViolations]);
         } catch (InvalidCartException|Error|EmptyCartException) {
@@ -209,7 +213,7 @@ class InquiryController extends StorefrontController
             );
 
             return $this->forwardToRoute('frontend.inquiry.register.page');
-        } catch (UnknownPaymentMethodException|CartException $e) {
+        } catch (PaymentException|CartException $e) {
             if ($e->getErrorCode() === CartException::CART_PAYMENT_INVALID_ORDER_STORED_CODE && $e->getParameter('orderId')) {
                 return $this->forwardToRoute('frontend.inquiry.finish.page', ['orderId' => $e->getParameter('orderId'), 'changedPayment' => false, 'paymentFailed' => true]);
             }
@@ -225,13 +229,12 @@ class InquiryController extends StorefrontController
 
         try {
             $finishUrl = $this->generateUrl('frontend.inquiry.finish.page', ['orderId' => $orderId]);
-
             $errorUrl = $this->generateUrl('frontend.account.edit-order.page', ['orderId' => $orderId]);
 
-            $response = Profiler::trace('handle-payment', fn (): ?RedirectResponse => $this->paymentService->handlePaymentByOrder($orderId, new RequestDataBag(['tos' => 'on']), $context, $finishUrl, $errorUrl));
+            $response = Profiler::trace('handle-payment', fn (): ?RedirectResponse => $this->paymentProcessor->pay($orderId, $request, $context, $finishUrl, $errorUrl));
 
             return $response ?? new RedirectResponse($finishUrl);
-        } catch (PaymentProcessException|InvalidOrderException|UnknownPaymentMethodException) {
+        } catch (PaymentException|IllegalTransitionException|FlowException) {
             return $this->forwardToRoute('frontend.inquiry.finish.page', ['orderId' => $orderId, 'changedPayment' => false, 'paymentFailed' => true]);
         }
     }
@@ -409,5 +412,18 @@ class InquiryController extends StorefrontController
     private function getUploadedFiles(Request $request): ?array
     {
         return $request->getSession()->get('uploadedFiles');
+    }
+
+    private function addAffiliateTracking(RequestDataBag $dataBag, SessionInterface $session): void
+    {
+        $affiliateCode = $session->get(AffiliateTrackingListener::AFFILIATE_CODE_KEY);
+        $campaignCode = $session->get(AffiliateTrackingListener::CAMPAIGN_CODE_KEY);
+        if ($affiliateCode) {
+            $dataBag->set(AffiliateTrackingListener::AFFILIATE_CODE_KEY, $affiliateCode);
+        }
+
+        if ($campaignCode) {
+            $dataBag->set(AffiliateTrackingListener::CAMPAIGN_CODE_KEY, $campaignCode);
+        }
     }
 }

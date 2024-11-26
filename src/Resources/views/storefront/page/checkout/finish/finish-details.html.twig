@@ -18,7 +18,7 @@
 
 {% block page_checkout_finish_ordernumber %}
     {% if isInquiry %}
-        <p class="finish-ordernumber" data-order-number="{{ page.order.orderNumber }}">
+        <p class="finish-ordernumber" data-order-number="{{ page.order.orderNumber }}" data-inquiry-finish-plugin="true">
             {{ "inquiry.finishInfoOrdernumber"|trans|sw_sanitize }}{{ page.order.orderNumber }}
         </p>
     {% else %}

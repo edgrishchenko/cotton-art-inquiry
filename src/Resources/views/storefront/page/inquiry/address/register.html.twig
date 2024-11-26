@@ -25,6 +25,7 @@
                         {% else %}
                             data-form-csrf-handler="true"
                         {% endif %}
+                        data-inquiry-personal-plugin="true"
                         enctype="multipart/form-data">
 
                     {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is not defined %}

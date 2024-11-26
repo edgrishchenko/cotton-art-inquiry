@@ -7,12 +7,25 @@
     }
 
     .checkout-main {
-      @extend .col-lg-8;
+      @extend .order-2;
+      @extend .order-md-1;
+      @extend .col-md-8;
+      margin-top: $spacer-lg;
       margin-bottom: $spacer-lg;
     }
 
     .checkout-aside {
+      @extend .order-1;
+      @extend .order-md-2;
       @extend .col-md-4;
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .is-act-inquiryregisterpage {
+    .checkout {
+      padding-top: 0;
     }
   }
 }
