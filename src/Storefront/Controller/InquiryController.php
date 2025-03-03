@@ -16,7 +16,7 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Checkout\Order\Exception\EmptyCartException;
 use Shopware\Core\Checkout\Order\SalesChannel\OrderService;
 use Shopware\Core\Checkout\Payment\PaymentException;
-use Shopware\Core\Checkout\Payment\PaymentProcessor;
+use Shopware\Core\Checkout\Payment\PaymentService;
 use Shopware\Core\Content\Flow\FlowException;
 use Shopware\Core\Content\Media\MediaCollection;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
@@ -60,7 +60,7 @@ class InquiryController extends StorefrontController
         private readonly InquiryFinishPageLoader $finishPageLoader,
         private readonly CartService $cartService,
         private readonly OrderService $orderService,
-        private readonly PaymentProcessor $paymentProcessor,
+        private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
         private readonly SystemConfigService $systemConfigService,
@@ -231,8 +231,7 @@ class InquiryController extends StorefrontController
             $finishUrl = $this->generateUrl('frontend.inquiry.finish.page', ['orderId' => $orderId]);
             $errorUrl = $this->generateUrl('frontend.account.edit-order.page', ['orderId' => $orderId]);
 
-            $response = Profiler::trace('handle-payment', fn (): ?RedirectResponse => $this->paymentProcessor->pay($orderId, $request, $context, $finishUrl, $errorUrl));
-
+            $response = Profiler::trace('handle-payment', fn (): ?RedirectResponse => $this->paymentService->handlePaymentByOrder($orderId, $data, $context, $finishUrl, $errorUrl));
             return $response ?? new RedirectResponse($finishUrl);
         } catch (PaymentException|IllegalTransitionException|FlowException) {
             return $this->forwardToRoute('frontend.inquiry.finish.page', ['orderId' => $orderId, 'changedPayment' => false, 'paymentFailed' => true]);

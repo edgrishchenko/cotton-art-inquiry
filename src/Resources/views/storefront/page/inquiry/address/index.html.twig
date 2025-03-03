@@ -9,6 +9,10 @@
 {% block page_checkout_main_content %}
     {% block page_checkout_address %}
         {% block page_checkout_address_header %}
+ 	{% if isInquiry %}
+		<div class="reqestadv2 h1">{{ "checkout.addressHeader.requestadv2"|trans|sw_sanitize }}</div>
+	{% endif %}
+
             <h1 class="address-main-header">
                 {{ "checkout.addressHeader"|trans|sw_sanitize }}
             </h1>

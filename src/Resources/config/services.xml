@@ -12,7 +12,7 @@
             <argument type="service" id="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentProcessor"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="CottonArt\Inquiry\Service\FileUploader"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

@@ -50,9 +50,9 @@ export default class InquiryPlugin extends Plugin {
         inputs.forEach((input) => {
             if (sessionStorage.getItem(input.name)) {
                 input.value = sessionStorage.getItem(input.name);
-                input.dispatchEvent(new Event('change'));
+                input.dispatchEvent(new Event('input'));
             }
-            input.addEventListener('change', () => {
+            input.addEventListener('input', () => {
                 sessionStorage.setItem(input.name, input.value);
             });
         });
