@@ -1,0 +1,24 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+
+{% block layout_head_javascript_router %}
+    {# Register all routes that will be needed in JavaScript to the window.router object #}
+    <script>
+        window.activeNavigationId = '{{ shopware.navigation.id }}';
+        window.router = {
+            'frontend.cart.offcanvas': '{{ path('frontend.cart.offcanvas') }}',
+            'frontend.inquiry.cart.offcanvas': '{{ path('frontend.inquiry.cart.offcanvas') }}',
+            'frontend.cookie.offcanvas': '{{ path('frontend.cookie.offcanvas') }}',
+            'frontend.checkout.finish.page': '{{ path('frontend.checkout.finish.page') }}',
+            'frontend.checkout.info': '{{ path('frontend.checkout.info') }}',
+            'frontend.inquiry.info': '{{ path('frontend.inquiry.info') }}',
+            'frontend.menu.offcanvas': '{{ path('frontend.menu.offcanvas') }}',
+            'frontend.cms.page': '{{ path('frontend.cms.page') }}',
+            'frontend.cms.navigation.page': '{{ path('frontend.cms.navigation.page') }}',
+            'frontend.account.addressbook': '{{ path('frontend.account.addressbook') }}',
+            'frontend.country.country-data': '{{ path('frontend.country.country.data') }}',
+            'frontend.app-system.generate-token': '{{ path('frontend.app-system.generate-token', { name: 'Placeholder' }) }}',
+        };
+        window.salesChannelId = '{{ context.salesChannelId }}';
+    </script>
+{% endblock %}

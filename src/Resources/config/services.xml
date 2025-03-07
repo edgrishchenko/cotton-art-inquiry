@@ -8,10 +8,9 @@
         <service id="CottonArt\Inquiry\Storefront\Controller\InquiryController" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\LogoutRoute"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader"/>
+            <argument type="service" id="CottonArt\Inquiry\Storefront\Page\Inquiry\Register\InquiryRegisterPageLoader"/>
             <argument type="service" id="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
             <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="CottonArt\Inquiry\Service\FileUploader"/>
@@ -19,6 +18,8 @@
             <argument type="service" id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement"/>
             <argument type="service" id="media_folder.repository"/>
             <argument type="service" id="media.repository"/>
+            <argument type="service" id="CottonArt\Inquiry\Storefront\Page\Inquiry\Offcanvas\OffcanvasInquiryCartPageLoader"/>
+            <argument type="service" id="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -26,6 +27,41 @@
             <call method="setTwig">
                 <argument type="service" id="twig"/>
             </call>
+        </service>
+
+        <service id="CottonArt\Inquiry\Storefront\Controller\InquiryCartLineItemController" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryRegistry"/>
+            <argument type="service" id="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
+
+        <service id="CottonArt\Inquiry\Storefront\Page\Inquiry\Offcanvas\OffcanvasInquiryCartPageLoader">
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService"/>
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
+            <argument type="service" id="Shopware\Core\Checkout\Shipping\SalesChannel\ShippingMethodRoute"/>
+        </service>
+
+        <service id="CottonArt\Inquiry\Storefront\Page\Inquiry\Register\InquiryRegisterPageLoader" public="true">
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\ListAddressRoute"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService"/>
+            <argument type="service" id="Shopware\Core\System\Salutation\SalesChannel\SalutationRoute"/>
+            <argument type="service" id="Shopware\Core\System\Country\SalesChannel\CountryRoute"/>
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Translation\Translator"/>
+        </service>
+
+        <service id="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService" class="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService">
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\CartPersister"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
         </service>
 
         <service id="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader" class="CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader">
@@ -67,10 +103,6 @@
 
         <service id="CottonArt\Inquiry\Service\InquiryCustomFieldsManagement">
             <argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
-        </service>
-
-        <service id="CottonArt\Inquiry\Extension\CsrfFunctionExtension">
-            <tag name="twig.extension"/>
         </service>
 
         <service id="CottonArt\Inquiry\Core\Checkout\Cart\InquiryCartProcessor">

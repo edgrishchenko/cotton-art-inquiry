@@ -76,18 +76,7 @@
         {% block page_checkout_cart_add_promotion %}
             <form action="{{ path('frontend.checkout.promotion.add') }}"
                   class="cart-add-promotion"
-                    {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
-                    {% else %}
-                        data-form-csrf-handler="true"
-                    {% endif %}
                   method="post">
-
-
-                {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is not defined %}
-                    {% block page_checkout_cart_add_promotion_csrf %}
-                        {{ sw_csrf('frontend.checkout.promotion.add') }}
-                    {% endblock %}
-                {% endif %}
 
                 {% block page_checkout_cart_add_promotion_forward %}
                     <input type="hidden"

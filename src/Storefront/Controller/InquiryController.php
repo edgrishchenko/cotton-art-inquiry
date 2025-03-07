@@ -2,10 +2,13 @@
 
 namespace CottonArt\Inquiry\Storefront\Controller;
 
+use CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService;
 use CottonArt\Inquiry\CottonArtInquiry;
 use CottonArt\Inquiry\Service\FileUploader;
 use CottonArt\Inquiry\Service\InquiryCustomFieldsManagement;
 use CottonArt\Inquiry\Storefront\Page\Inquiry\Finish\InquiryFinishPageLoader;
+use CottonArt\Inquiry\Storefront\Page\Inquiry\Offcanvas\OffcanvasInquiryCartPageLoader;
+use CottonArt\Inquiry\Storefront\Page\Inquiry\Register\InquiryRegisterPageLoader;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -14,7 +17,6 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractLogoutRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Checkout\Order\Exception\EmptyCartException;
-use Shopware\Core\Checkout\Order\SalesChannel\OrderService;
 use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Checkout\Payment\PaymentService;
 use Shopware\Core\Content\Flow\FlowException;
@@ -29,22 +31,23 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Framework\Validation\DataValidationDefinition;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\Profiling\Profiler;
-use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
-use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Attribute\Route;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Checkout\Cart\Error\PaymentMethodChangedError;
 use Shopware\Storefront\Checkout\Cart\Error\ShippingMethodChangedError;
 use Shopware\Storefront\Controller\StorefrontController;
+use Shopware\Storefront\Framework\AffiliateTracking\AffiliateTrackingListener;
 use Shopware\Storefront\Framework\Routing\RequestTransformer;
-use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoader;
+use Shopware\Storefront\Page\Checkout\Offcanvas\CheckoutInfoWidgetLoadedHook;
+use Shopware\Storefront\Page\Checkout\Offcanvas\CheckoutOffcanvasWidgetLoadedHook;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\EqualTo;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -56,18 +59,67 @@ class InquiryController extends StorefrontController
     public function __construct(
         private readonly AbstractRegisterRoute $registerRoute,
         private readonly AbstractLogoutRoute $logoutRoute,
-        private readonly CheckoutRegisterPageLoader $registerPageLoader,
+        private readonly InquiryRegisterPageLoader $inquiryRegisterPageLoader,
         private readonly InquiryFinishPageLoader $finishPageLoader,
         private readonly CartService $cartService,
-        private readonly OrderService $orderService,
         private readonly PaymentService $paymentService,
         private readonly EntityRepository $domainRepository,
         private readonly FileUploader $fileUploader,
         private readonly SystemConfigService $systemConfigService,
         private readonly InquiryCustomFieldsManagement $customFieldsManagement,
         private readonly EntityRepository $mediaFolderRepository,
-        private readonly EntityRepository $mediaRepository
+        private readonly EntityRepository $mediaRepository,
+        private readonly OffcanvasInquiryCartPageLoader $offcanvasInquiryCartPageLoader,
+        private readonly InquiryService $inquiryService
     ) {
+    }
+
+    #[Route(path: '/widgets/inquiry/info', name: 'frontend.inquiry.info', defaults: ['XmlHttpRequest' => true], methods: ['GET'])]
+    public function info(Request $request, SalesChannelContext $context): Response
+    {
+        $session = $request->getSession();
+        $inquiryCartToken = $session->get('inquiry.cartToken') ?? $context->getToken();
+
+        $cart = $this->cartService->getCart($inquiryCartToken, $context);
+
+        if ($cart->getLineItems()->count() <= 0) {
+            return new Response(null, Response::HTTP_NO_CONTENT);
+        }
+
+        $page = $this->offcanvasInquiryCartPageLoader->load($request, $context);
+
+        $this->hook(new CheckoutInfoWidgetLoadedHook($page, $context));
+
+        $response = $this->renderStorefront('@Storefront/storefront/layout/header/actions/cart-widget.html.twig', ['page' => $page]);
+        $response->headers->set('x-robots-tag', 'noindex');
+
+        return $response;
+    }
+
+    #[Route(path: '/inquiry/offcanvas', name: 'frontend.inquiry.cart.offcanvas', options: ['seo' => false], defaults: ['XmlHttpRequest' => true], methods: ['GET'])]
+    public function offcanvas(Request $request, SalesChannelContext $context): Response
+    {
+        $page = $this->offcanvasInquiryCartPageLoader->load($request, $context);
+
+        $this->hook(new CheckoutOffcanvasWidgetLoadedHook($page, $context));
+
+        $cart = $page->getCart();
+        $this->addCartErrors($cart);
+        $cartErrors = $cart->getErrors();
+
+        if (!$request->query->getBoolean(self::REDIRECTED_FROM_SAME_ROUTE) && $this->routeNeedsReload($cartErrors)) {
+            $cartErrors->clear();
+
+            // To prevent redirect loops add the identifier that the request already got redirected from the same origin
+            return $this->redirectToRoute(
+                'frontend.inquiry.cart.offcanvas',
+                [...$request->query->all(), ...[self::REDIRECTED_FROM_SAME_ROUTE => true]],
+            );
+        }
+
+        $cartErrors->clear();
+
+        return $this->renderStorefront('@Storefront/storefront/component/checkout/offcanvas-cart.html.twig', ['page' => $page]);
     }
 
     #[Route(path: '/inquiry/file-upload', name: 'frontend.inquiry.file.upload', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
@@ -105,11 +157,11 @@ class InquiryController extends StorefrontController
         $redirect = $request->get('redirectTo', 'frontend.inquiry.save');
         $errorRoute = $request->attributes->get('_route');
 
-        if ($this->cartService->getCart($context->getToken(), $context)->getLineItems()->count() === 0) {
+        if ($this->inquiryService->getInquiryCart($request, $context)->getLineItems()->count() === 0) {
             return $this->redirectToRoute('frontend.checkout.cart.page');
         }
 
-        $page = $this->registerPageLoader->load($request, $context);
+        $page = $this->inquiryRegisterPageLoader->load($request, $context);
         $cart = $page->getCart();
         $cartErrors = $cart->getErrors();
 
@@ -203,8 +255,7 @@ class InquiryController extends StorefrontController
 
             $data->set('tos', 'on');
             $this->addAffiliateTracking($data, $request->getSession());
-
-            $orderId = Profiler::trace('checkout-order', fn () => $this->orderService->createOrder($data, $context));
+            $orderId = $this->inquiryService->createInquiry($data, $request, $context);
         } catch (ConstraintViolationException $formViolations) {
             return $this->forwardToRoute('frontend.inquiry.register.page', ['formViolations' => $formViolations]);
         } catch (InvalidCartException|Error|EmptyCartException) {
