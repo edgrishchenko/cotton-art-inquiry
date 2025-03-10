@@ -29,9 +29,7 @@ class InquiryCartProcessor implements CartProcessorInterface
 
     public function process(CartDataCollection $data, Cart $original, Cart $toCalculate, SalesChannelContext $context, CartBehavior $behavior): void
     {
-        $currentRequest = $this->requestStack->getCurrentRequest()->attributes->get('_route');
-
-        if ($currentRequest === 'frontend.inquiry.register.page' || $currentRequest === 'frontend.inquiry.save') {
+        if ($toCalculate->getExtension('inquiry')?->get('status') === true) {
             $context->assign([
                 'paymentMethod' => $this->getInquiryPaymentMethod($context)
             ]);

@@ -32,6 +32,8 @@
         <service id="CottonArt\Inquiry\Storefront\Controller\InquiryCartLineItemController" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Cart\LineItemFactoryRegistry"/>
             <argument type="service" id="CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>

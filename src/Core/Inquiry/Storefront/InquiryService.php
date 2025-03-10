@@ -40,10 +40,11 @@ class InquiryService
             $session->set('inquiry.cartToken', $inquiryCartToken);
             $cart = $this->cartService->createNew($inquiryCartToken);
 
-            $this->activateInquiryMode($cart);
         } else {
             $cart = $this->cartService->getCart($inquiryCartToken, $context);
         }
+
+        $this->activateInquiryMode($cart);
 
         return $cart;
     }

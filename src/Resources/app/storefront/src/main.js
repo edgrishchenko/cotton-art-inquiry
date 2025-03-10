@@ -12,3 +12,4 @@ PluginManager.register('InquiryFinishPlugin', InquiryFinishPlugin, '[data-inquir
 PluginManager.register('InquiryCartWidget', InquiryCartWidgetPlugin, '[data-inquiry-cart-widget]');
 PluginManager.register('OffCanvasInquiryCart', OffCanvasInquiryCartPlugin, '[data-off-canvas-inquiry-cart]');
 PluginManager.register('AddToInquiryCart', AddToInquiryCartPlugin, '[data-add-to-inquiry-cart]');
+PluginManager.override('QuantitySelector', () => import('./plugin/quantity-selector/inquiry-quantity-selector.plugin'), '[data-quantity-selector]');

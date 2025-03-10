@@ -90,7 +90,7 @@ class InquiryController extends StorefrontController
 
         $this->hook(new CheckoutInfoWidgetLoadedHook($page, $context));
 
-        $response = $this->renderStorefront('@Storefront/storefront/layout/header/actions/cart-widget.html.twig', ['page' => $page]);
+        $response = $this->renderStorefront('@Storefront/storefront/layout/header/actions/inquiry-cart-widget.html.twig', ['page' => $page]);
         $response->headers->set('x-robots-tag', 'noindex');
 
         return $response;

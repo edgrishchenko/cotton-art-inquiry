@@ -24,6 +24,9 @@
     "leftCollar": "Linker Kragen (max. 7,5 cm)",
     "centerNeck": "Am Nacken mittig (max. 11 cm)",
     "logoPlacementHeader": "Bitte wählen Sie die gewünschte Platzierung und laden Sie Ihr Logo hoch:",
-    "dataUpload": "Datei hochladen"
+    "dataUpload": "Datei hochladen",
+    "detail": {
+      "addProduct": "In den Anfragekorb"
+    }
   }
 }

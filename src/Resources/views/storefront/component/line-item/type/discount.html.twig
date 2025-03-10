@@ -1,0 +1,13 @@
+{% sw_extends '@Storefront/storefront/component/line-item/type/discount.html.twig' %}
+
+{% block component_line_item_type_discount_col_total_remove %}
+    <div class="line-item-remove">
+        {% if lineItem.removable and nestingLevel < 1 %}
+            {% if page.extensions.inquiry.status or page.cart.extensions.inquiry.status %}
+                {% sw_include '@CottonArtInquiry/storefront/component/inquiry-line-item/element/remove.html.twig' %}
+            {% else %}
+                {% sw_include '@Storefront/storefront/component/line-item/element/remove.html.twig' %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

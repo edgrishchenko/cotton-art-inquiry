@@ -1,7 +1,7 @@
 {% sw_extends '@Storefront/storefront/component/checkout/offcanvas-cart.html.twig' %}
 
 {% block component_offcanvas_cart_actions_checkout %}
-    {% if page.cart.extensions.inquiry.status %}
+    {% if page.extensions.inquiry.status %}
         {% block component_offcanvas_cart_actions_inquiry %}
             <div class="d-grid">
                 <a href="{{ path('frontend.inquiry.register.page') }}"
@@ -16,9 +16,53 @@
     {% endif %}
 {% endblock %}
 
+
+{% block component_offcanvas_cart_item %}
+    {% if page.extensions.inquiry.status or page.cart.extensions.inquiry.status %}
+        {% sw_include '@Storefront/storefront/component/line-item/line-item.html.twig' with {
+            displayMode: 'offcanvas',
+            redirectTo: 'frontend.inquiry.cart.offcanvas'
+        } %}
+    {% else %}
+        {% sw_include '@Storefront/storefront/component/line-item/line-item.html.twig' with {
+            displayMode: 'offcanvas',
+            redirectTo: 'frontend.cart.offcanvas'
+        } %}
+    {% endif %}
+{% endblock %}
+
 {% block component_offcanvas_cart_actions_cart %}
-    {% if page.cart.extensions.inquiry.status %}
+    {% if page.extensions.inquiry.status %}
     {% else %}
         {{ parent() }}
     {% endif %}
+{% endblock %}
+
+{% block component_offcanvas_cart_actions_promotion_form %}
+
+    {% if page.extensions.inquiry.status %}
+        {% set formAction = path('frontend.inquiry.promotion.add') %}
+        {% set redirectTo = 'frontend.inquiry.cart.offcanvas' %}
+    {% else %}
+        {% set formAction = path('frontend.checkout.promotion.add') %}
+        {% set redirectTo = 'frontend.cart.offcanvas' %}
+    {% endif %}
+
+    <form action="{{ formAction }}"
+          class="offcanvas-cart-promotion-form js-offcanvas-cart-add-promotion"
+          method="post">
+        {% block component_offcanvas_cart_actions_promotion_redirect %}
+            <input type="hidden"
+                   name="redirectTo"
+                   value="{{ redirectTo }}">
+        {% endblock %}
+
+        {% block component_offcanvas_cart_actions_promotion_label %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block component_offcanvas_cart_actions_promotion_input_group %}
+            {{ parent() }}
+        {% endblock %}
+    </form>
 {% endblock %}

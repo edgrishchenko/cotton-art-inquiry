@@ -1,0 +1,43 @@
+{% block component_inquiry_line_item_remove %}
+    {% if redirectTo == 'frontend.inquiry.save' %}
+        {% set redirectTo = 'frontend.inquiry.register.page' %}
+    {% endif %}
+    {% if redirectTo is not defined %}
+        {% set redirectTo = 'frontend.inquiry.register.page' %}
+    {% endif %}
+
+    {% if formAction is not defined %}
+        {% set formAction = path('frontend.inquiry.inquiry-line-item.delete', { id: lineItem.id }) %}
+    {% endif %}
+
+    {% block component_inquiry_line_item_remove_form %}
+        {% set loaderOptions = {
+            skipLoadingIndicator: true
+        } %}
+
+        <form action="{{ formAction }}"
+              method="post"
+              data-form-submit-loader="true"
+              data-form-submit-loader-options="{{ loaderOptions|json_encode }}"
+              class="{% if displayMode === 'offcanvas' %}js-offcanvas-cart-remove-product{% endif %}">
+            {% block component_inquiry_line_item_remove_redirect %}
+                <input type="hidden"
+                       name="redirectTo"
+                       value="{{ redirectTo }}">
+                <input type="hidden"
+                       name="redirectParameters"
+                       value="{{ redirectParameters }}">
+            {% endblock %}
+
+            {% block component_inquiry_line_item_remove_button %}
+                <button type="submit"
+                        aria-label="{{ 'checkout.removeLineItem'|trans({ '%lineItemLabel%': label })|striptags }}"
+                        title="{{ 'global.default.remove'|trans }}"
+                        data-product-id="{{ lineItem.id }}"
+                        class="btn btn-outline-secondary btn-sm line-item-remove-button">
+                    {% sw_icon 'x' style { size: 'sm' } %}
+                </button>
+            {% endblock %}
+        </form>
+    {% endblock %}
+{% endblock %}

@@ -3,9 +3,11 @@
 namespace CottonArt\Inquiry\Storefront\Page\Inquiry\Offcanvas;
 
 use CottonArt\Inquiry\Core\Inquiry\Storefront\InquiryService;
+use CottonArt\Inquiry\CottonArtInquiry;
 use Shopware\Core\Checkout\Shipping\SalesChannel\AbstractShippingMethodRoute;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Struct\ArrayEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
@@ -37,6 +39,8 @@ class OffcanvasInquiryCartPageLoader
 
         $page->setShippingMethods($this->getShippingMethods($salesChannelContext));
 
+        $this->activateInquiryMode($page);
+
         $this->eventDispatcher->dispatch(
             new OffcanvasCartPageLoadedEvent($page, $salesChannelContext, $request)
         );
@@ -49,6 +53,15 @@ class OffcanvasInquiryCartPageLoader
         $request = new Request();
         $request->query->set('onlyAvailable', '1');
 
-        return $this->shippingMethodRoute->load($request, $context, new Criteria())->getShippingMethods();
+        $criteria = new Criteria([CottonArtInquiry::SHIPPING_METHOD_ID]);
+
+        return $this->shippingMethodRoute->load($request, $context, $criteria)->getShippingMethods();
+    }
+
+    private function activateInquiryMode(OffcanvasCartPage $page): void
+    {
+        $page->addExtension('inquiry', new ArrayEntity([
+            'status' => true
+        ]));
     }
 }

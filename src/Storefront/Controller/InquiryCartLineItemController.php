@@ -7,6 +7,9 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Error\Error;
 use Shopware\Core\Checkout\Cart\LineItemFactoryRegistry;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Promotion\Cart\PromotionCartAddedInformationError;
+use Shopware\Core\Checkout\Promotion\Cart\PromotionItemBuilder;
 use Shopware\Core\Content\Product\Exception\ProductNotFoundException;
 use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -21,7 +24,9 @@ class InquiryCartLineItemController extends StorefrontController
 {
     public function __construct(
         private readonly LineItemFactoryRegistry $lineItemFactoryRegistry,
-        private readonly InquiryService $inquiryService
+        private readonly InquiryService $inquiryService,
+        private readonly CartService $cartService,
+        private readonly PromotionItemBuilder $promotionItemBuilder
     ) {
     }
 
@@ -79,13 +84,94 @@ class InquiryCartLineItemController extends StorefrontController
         return $this->createActionResponse($request);
     }
 
+    #[Route(path: '/inquiry/inquiry-line-item/change-quantity/{id}', name: 'frontend.inquiry.inquiry-line-item.change-quantity', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
+    public function changeQuantity(string $id, Request $request, SalesChannelContext $context): Response
+    {
+        try {
+            $cart = $this->inquiryService->getInquiryCart($request, $context);
+
+            $quantity = $request->get('quantity');
+
+            if ($quantity === null) {
+                throw RoutingException::missingRequestParameter('quantity');
+            }
+
+            if (!$cart->has($id)) {
+                throw CartException::lineItemNotFound($id);
+            }
+
+            $cart = $this->cartService->changeQuantity($cart, $id, (int)$quantity, $context);
+
+            if (!$this->traceErrors($cart)) {
+                $this->addFlash(self::SUCCESS, $this->trans('checkout.cartUpdateSuccess'));
+            }
+        } catch (\Exception) {
+            $this->addFlash(self::DANGER, $this->trans('error.message-default'));
+        }
+
+        return $this->createActionResponse($request);
+    }
+
+    #[Route(path: '/inquiry/inquiry-line-item/delete/{id}', name: 'frontend.inquiry.inquiry-line-item.delete', defaults: ['XmlHttpRequest' => true], methods: ['POST', 'DELETE'])]
+    public function deleteLineItem(string $id, Request $request, SalesChannelContext $context): Response
+    {
+        try {
+            $cart = $this->inquiryService->getInquiryCart($request, $context);
+
+            if (!$cart->has($id)) {
+                throw CartException::lineItemNotFound($id);
+            }
+
+            $cart = $this->cartService->remove($cart, $id, $context);
+
+            if (!$this->traceErrors($cart)) {
+                $this->addFlash(self::SUCCESS, $this->trans('checkout.cartUpdateSuccess'));
+            }
+        } catch (\Exception) {
+            $this->addFlash(self::DANGER, $this->trans('error.message-default'));
+        }
+
+        return $this->createActionResponse($request);
+    }
+
+    #[Route(path: '/inquiry/promotion/add', name: 'frontend.inquiry.promotion.add', defaults: ['XmlHttpRequest' => true], methods: ['POST'])]
+    public function addPromotion(Request $request, SalesChannelContext $context): Response
+    {
+        try {
+            $cart = $this->inquiryService->getInquiryCart($request, $context);
+
+            $code = (string)$request->request->get('code');
+
+            if ($code === '') {
+                throw RoutingException::missingRequestParameter('code');
+            }
+
+            $lineItem = $this->promotionItemBuilder->buildPlaceholderItem($code);
+
+            $cart = $this->cartService->add($cart, $lineItem, $context);
+
+            $addedEvents = $cart->getErrors()->filterInstance(PromotionCartAddedInformationError::class);
+            if ($addedEvents->count() > 0) {
+                $this->addFlash(self::SUCCESS, $this->trans('checkout.codeAddedSuccessful'));
+
+                return $this->createActionResponse($request);
+            }
+
+            $this->traceErrors($cart);
+        } catch (\Exception) {
+            $this->addFlash(self::DANGER, $this->trans('error.message-default'));
+        }
+
+        return $this->createActionResponse($request);
+    }
+
     private function traceErrors(Cart $cart): bool
     {
         if ($cart->getErrors()->count() <= 0) {
             return false;
         }
 
-        $this->addCartErrors($cart, fn (Error $error) => $error->isPersistent());
+        $this->addCartErrors($cart, fn(Error $error) => $error->isPersistent());
 
         return true;
     }
@@ -113,23 +199,23 @@ class InquiryCartLineItemController extends StorefrontController
         }
 
         if (isset($lineItemArray['quantity'])) {
-            $lineItemArray['quantity'] = (int) $lineItemArray['quantity'];
+            $lineItemArray['quantity'] = (int)$lineItemArray['quantity'];
         }
 
         if (isset($lineItemArray['stackable'])) {
-            $lineItemArray['stackable'] = (bool) $lineItemArray['stackable'];
+            $lineItemArray['stackable'] = (bool)$lineItemArray['stackable'];
         }
 
         if (isset($lineItemArray['removable'])) {
-            $lineItemArray['removable'] = (bool) $lineItemArray['removable'];
+            $lineItemArray['removable'] = (bool)$lineItemArray['removable'];
         }
 
         if (isset($lineItemArray['priceDefinition']['quantity'])) {
-            $lineItemArray['priceDefinition']['quantity'] = (int) $lineItemArray['priceDefinition']['quantity'];
+            $lineItemArray['priceDefinition']['quantity'] = (int)$lineItemArray['priceDefinition']['quantity'];
         }
 
         if (isset($lineItemArray['priceDefinition']['isCalculated'])) {
-            $lineItemArray['priceDefinition']['isCalculated'] = (int) $lineItemArray['priceDefinition']['isCalculated'];
+            $lineItemArray['priceDefinition']['isCalculated'] = (int)$lineItemArray['priceDefinition']['isCalculated'];
         }
 
         return $lineItemArray;
