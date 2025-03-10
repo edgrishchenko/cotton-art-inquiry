@@ -21,22 +21,8 @@
                         method="post"
                         data-form-submit-loader="true"
                         data-form-validation="true"
-                        {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
-                        {% else %}
-                            data-form-csrf-handler="true"
-                        {% endif %}
                         data-inquiry-personal-plugin="true"
                         enctype="multipart/form-data">
-
-                    {% if feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is not defined %}
-                        {% block page_checkout_cart_add_promotion_csrf %}
-                            {% if isCustomerLoggedIn %}
-                                {{ sw_csrf('frontend.inquiry.save') }}
-                            {% else %}
-                                {{ sw_csrf('frontend.inquiry.register.save') }}
-                            {% endif %}
-                        {% endblock %}
-                    {% endif %}
 
                     {% if isCustomerLoggedIn %}
                         {% block page_checkout_confirm_address %}

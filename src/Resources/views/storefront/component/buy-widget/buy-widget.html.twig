@@ -1,0 +1,93 @@
+{% sw_extends '@Storefront/storefront/component/buy-widget/buy-widget.html.twig' %}
+
+ {% block buy_widget_buy_form %}
+
+     {{ parent() }}
+
+     {% set formAction = path('frontend.inquiry.inquiry-line-item.add') %}
+
+     {% block inquiry_widget_buy_form_inner %}
+         <form
+                 id="productDetailPageInquiryProductForm"
+                 action="{{ formAction }}"
+                 method="post"
+                 class="buy-widget"
+                 data-add-to-inquiry-cart="true">
+
+             {% set DOWNLOAD_STATE = constant('Shopware\\Core\\Content\\Product\\State::IS_DOWNLOAD') %}
+             {% set showQuantitySelect = not product.states is defined or DOWNLOAD_STATE not in product.states or (DOWNLOAD_STATE in product.states and product.maxPurchase !== 1) %}
+             {% set buyable = product.available and product.childCount <= 0 and product.calculatedMaxPurchase > 0 %}
+
+             {% block inquiry_widget_buy_container %}
+                 {% if buyable %}
+                     <div class="row g-2 buy-widget-container">
+                         {% block inquiry_widget_buy_quantity_container %}
+                             <input
+                                     type="hidden"
+                                     name="lineItems[{{ product.id }}][quantity]"
+                                     class="form-control js-quantity-selector quantity-selector-group-input"
+                                     value="{{ product.minPurchase }}"
+                                     aria-label="{{ 'component.product.quantitySelect.label'|trans|striptags }}"
+                                     data-quantity-inquiry="true"
+                             />
+                         {% endblock %}
+
+                         {% block inquiry_widget_buy_redirect_input %}
+                             {# fallback redirect back to detail page is deactivated via js #}
+                             <input type="hidden"
+                                    name="redirectTo"
+                                    value="frontend.detail.page">
+
+                             <input type="hidden"
+                                    name="redirectParameters"
+                                    data-redirect-parameters="true"
+                                    value="{{ {productId: product.id}|json_encode }}">
+                         {% endblock %}
+
+                         {% block inquiry_widget_buy_product_buy_info %}
+                             <input type="hidden"
+                                    name="lineItems[{{ product.id }}][id]"
+                                    value="{{ product.id }}">
+                             <input type="hidden"
+                                    name="lineItems[{{ product.id }}][type]"
+                                    value="product">
+                             <input type="hidden"
+                                    name="lineItems[{{ product.id }}][referencedId]"
+                                    value="{{ product.id }}">
+                             <input type="hidden"
+                                    name="lineItems[{{ product.id }}][stackable]"
+                                    value="1">
+                             <input type="hidden"
+                                    name="lineItems[{{ product.id }}][removable]"
+                                    value="1">
+                         {% endblock %}
+
+                         {% block inquiry_widget_product_buy_meta %}
+                             <input type="hidden"
+                                    name="product-name"
+                                    value="{{ product.translated.name }}">
+                             <input type="hidden"
+                                    name="brand-name"
+                                    value="{{ product.manufacturer.getName() }}">
+                         {% endblock %}
+
+                         {% block inquiry_widget_buy_button_container %}
+                             <div class="{% if showQuantitySelect %}col-8{% else %}col-12{% endif %}">
+                                 {% block inquiry_widget_buy_button %}
+                                     <div class="d-grid">
+                                         <button class="btn btn-primary btn-buy"
+                                                 type="submit"
+                                                 title="{{ 'inquiry.detail.addProduct'|trans|striptags }}"
+                                                 aria-label="{{ 'inquiry.detail.addProduct'|trans|striptags }}">
+                                             {{ 'inquiry.detail.addProduct'|trans|striptags }}
+                                         </button>
+                                     </div>
+                                 {% endblock %}
+                             </div>
+                         {% endblock %}
+                     </div>
+                 {% endif %}
+             {% endblock %}
+         </form>
+     {% endblock %}
+ {% endblock %}
